@@ -1,0 +1,77 @@
+<style>
+    /* --------------------------------------- Main --------------------------------------- */
+    .zWindow {
+        position : absolute;
+        z-index : 1000;
+    }
+    
+    /* --------------------------------------- Components --------------------------------------- */
+    .zWindow .resizer {
+        position : absolute;
+    }
+    
+    .zWindow .resizer.resizer-w {
+        cursor : ew-resize;
+        height : 100%;
+        width : 5px;
+        background-color : #253238;
+    }
+    
+    .zWindow .resizer.resizer-h {
+        cursor : ns-resize;
+        height : 5px;
+        width : 100%;
+        background-color : #253238;
+    }
+    
+    .zWindow .resizer.resizer-wha {
+        cursor : nesw-resize;
+        height : 5px;
+        width : 5px;
+        background-color : #f63a23;
+    }
+    
+    .zWindow .resizer.resizer-whb {
+        cursor : nwse-resize;
+        height : 5px;
+        width : 5px;
+        background-color : #f63a23;
+    }
+    
+    /* --------------------------------------- State --------------------------------------- */
+    .zWindow.active {
+        z-index : 2000;
+    }
+    
+    /* --------------------------------------- Utilities --------------------------------------- */
+    .zWindow .top {
+        top : 0;
+    }
+    
+    .zWindow .bottom {
+        bottom : 0;
+    }
+    
+    .zWindow .left {
+        left : 0;
+    }
+    
+    .zWindow .right {
+        right : 0;
+    }
+    
+    
+    
+    
+    #window1 {
+        background-color : skyblue;
+    }
+    
+    #window2 {
+        background-color : orange;
+    }
+</style>
+
+<div class="zPanel" style="position:relative;">
+    
+</div>
