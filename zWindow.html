@@ -1,8 +1,10 @@
 <style>
     /* --------------------------------------- Main --------------------------------------- */
     .zWindow {
-        position : absolute;
+        /*position : absolute;*/
         z-index : 1000;
+        top : 0px;
+        left : 0px;
     }
     
     /* --------------------------------------- Components --------------------------------------- */
@@ -13,13 +15,13 @@
     .zWindow .resizer.resizer-w {
         cursor : ew-resize;
         height : 100%;
-        width : 5px;
+        width : 2px;
         background-color : #253238;
     }
     
     .zWindow .resizer.resizer-h {
         cursor : ns-resize;
-        height : 5px;
+        height : 2px;
         width : 100%;
         background-color : #253238;
     }
@@ -41,6 +43,7 @@
     /* --------------------------------------- State --------------------------------------- */
     .zWindow.active {
         z-index : 2000;
+        cursor : move;
     }
     
     /* --------------------------------------- Utilities --------------------------------------- */
