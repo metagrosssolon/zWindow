@@ -1,14 +1,14 @@
-zsi.ready(function() {
+$(document).ready(function() {
     $(".zPanel").css({
         "width" : $(window).width()
         ,"height" : $(window).height()
     });
     
-    $("body").zWindow({
+    $(".zPanel").zWindow({
         "id" : "window1"
         ,"width" : 200
         ,"height" : 200
-        ,"position" : "fixed"
+        ,"position" : "absolute"
     });
     
     $("body").zWindow({
@@ -27,20 +27,20 @@ $.fn.zWindow = function(param) {
         // - height
         // - position
         
-        var $self = this
-            ,self = this[0]
-            ,selfStyle = self.style
-            ,$zWindow
-            ,zWindow
-            ,zWindowStyle
+        var _$self = this
+            ,_self = this[0]
+            ,_selfStyle = _self.style
+            ,_$zWindow
+            ,_zWindow
+            ,_zWindowStyle
             
-            ,drag
-            ,resize
-            ,subtrahend = {}
-            ,onMouseDownObj = {}
+            ,_drag
+            ,_resize
+            ,_subtrahend = {}
+            ,_onMouseDownObj = {}
         ;
         
-        $self.append(
+        _$self.append(
             '<div id="' + param.id + '" class="zWindow">'
             + '<div class="resizer resizer-h top" resize="top"></div>'
             + '<div class="resizer resizer-h bottom" resize="bottom"></div>'
@@ -53,173 +53,139 @@ $.fn.zWindow = function(param) {
             + '</div>'
         );
         
-        $zWindow = $("#" + param.id)
+        _$zWindow = $("#" + param.id)
         .css({
             "width" : param.width
             ,"height" : param.height
             ,"position" : param.position
         });
         
-        zWindow = $zWindow[0];
-        zWindowStyle = zWindow.style;
+        _zWindow = _$zWindow[0];
+        _zWindowStyle = _zWindow.style;
         
-        $zWindow.mousedown(function(e) {
-            var _target = e.target;
+        _$zWindow.mousedown(function(e) {
+            var __target = e.target;
             
-            if (_target.id === param.id) {
-                drag = true;
+            if (__target.id === param.id) {
+                _drag = true;
                 
-                if (zWindowStyle.position === "absolute") {
+                if (_zWindowStyle.position === "absolute") {
                     // zWindow is absolute
-                    if (selfStyle.position === "relative") {
-                        subtrahend.y = self.offsetTop + e.offsetY;
-                        subtrahend.x = self.offsetLeft + e.offsetX;
+                    if (_selfStyle.position === "relative") {
+                        _subtrahend.y = _self.offsetTop + e.offsetY;
+                        _subtrahend.x = _self.offsetLeft + e.offsetX;
                     } else {
-                        subtrahend.y = e.offsetY;
-                        subtrahend.x = e.offsetX;
+                        _subtrahend.y = e.offsetY;
+                        _subtrahend.x = e.offsetX;
                     }
                 } else {
                     // zWindow is fixed
-                    subtrahend.y = e.offsetY;
-                    subtrahend.x = e.offsetX;
+                    _subtrahend.y = e.offsetY;
+                    _subtrahend.x = e.offsetX;
                 }
                 
-                zWindow.className += " active";
-            } else if (_target.classList[0] === "resizer") {
-                resize = true;
+                _zWindow.className += " active";
+            } else if (__target.classList[0] === "resizer") {
+                _resize = true;
                 
-                onMouseDownObj.resizer      = _target.attributes.resize.value;
-                onMouseDownObj.pageX        = e.pageX;
-                onMouseDownObj.pageY        = e.pageY;
-                onMouseDownObj.width        = zWindow.offsetWidth;
-                onMouseDownObj.height       = zWindow.offsetHeight;
-                onMouseDownObj.offsetTop    = zWindow.offsetTop;
-                onMouseDownObj.offsetLeft   = zWindow.offsetLeft;
+                _onMouseDownObj.resizer      = __target.attributes.resize.value;
+                _onMouseDownObj.pageX        = e.pageX;
+                _onMouseDownObj.pageY        = e.pageY;
+                _onMouseDownObj.width        = _zWindow.offsetWidth;
+                _onMouseDownObj.height       = _zWindow.offsetHeight;
+                _onMouseDownObj.offsetTop    = _zWindow.offsetTop;
+                _onMouseDownObj.offsetLeft   = _zWindow.offsetLeft;
             }
             
             // Prevent browser mouse down/up bug
             e.preventDefault();
         });
         
-        $self.mousemove(function(e) {
-            if (drag) {
-                if (zWindowStyle.position === "absolute") {
+        _$self.mousemove(function(e) {
+            if (_drag) {
+                if (_zWindowStyle.position === "absolute") {
                     // zWindow is absolute
-                    zWindowStyle.top = e.pageY - subtrahend.y + "px";
-                    zWindowStyle.left = e.pageX - subtrahend.x + "px";
+                    _zWindowStyle.top = e.pageY - _subtrahend.y + "px";
+                    _zWindowStyle.left = e.pageX - _subtrahend.x + "px";
                 } else {
                     // zWindow is fixed
-                    zWindowStyle.top = e.clientY - subtrahend.y + "px";
-                    zWindowStyle.left = e.clientX - subtrahend.x + "px";
+                    _zWindowStyle.top = e.clientY - _subtrahend.y + "px";
+                    _zWindowStyle.left = e.clientX - _subtrahend.x + "px";
                 }
                 
                 return false;
             }
             
-            if (resize) {
-                var _resizer = onMouseDownObj.resizer
-                    ,_pageX = e.pageX
-                    ,_pageY = e.pageY
-                    ,_lastPageX = onMouseDownObj.pageX
-                    ,_lastPageY = onMouseDownObj.pageY
-                    ,_lastWidth = onMouseDownObj.width
-                    ,_lastHeight = onMouseDownObj.height
-                    ,_lastOffsetTop = onMouseDownObj.offsetTop
-                    ,_lastOffsetLeft = onMouseDownObj.offsetLeft
-                    ,_newWidth = 0
-                    ,_newHeight = 0
+            if (_resize) {
+                var __resizer = _onMouseDownObj.resizer
+                    ,__pageX = e.pageX
+                    ,__pageY = e.pageY
+                    ,__lastPageX = _onMouseDownObj.pageX
+                    ,__lastPageY = _onMouseDownObj.pageY
+                    ,__lastWidth = _onMouseDownObj.width
+                    ,__lastHeight = _onMouseDownObj.height
+                    ,__lastOffsetTop = _onMouseDownObj.offsetTop
+                    ,__lastOffsetLeft = _onMouseDownObj.offsetLeft
+                    ,__newWidth = 0
+                    ,__newHeight = 0
                     
-                    ,_pageXPos = _lastPageX - _pageX
-                    ,_pageXNeg = _pageX - _lastPageX
-                    ,_pageYPos = _lastPageY - _pageY
-                    ,_pageYNeg = _pageY - _lastPageY
+                    ,__pageXPos = __lastPageX - __pageX
+                    ,__pageXNeg = __pageX - __lastPageX
+                    ,__pageYPos = __lastPageY - __pageY
+                    ,__pageYNeg = __pageY - __lastPageY
                 ;
                 
-                if (_resizer === "left" || _resizer === "top-left" || _resizer === "bottom-left")
+                if (__resizer === "left" || __resizer === "top-left" || __resizer === "bottom-left")
                 {
-                    _newWidth = (_pageX > _lastPageX ? _lastWidth + _pageXPos : _lastWidth - _pageXNeg);
+                    __newWidth = (__pageX > __lastPageX ? __lastWidth + __pageXPos : __lastWidth - __pageXNeg);
                     
-                    if (_newWidth > 200) {
-                        zWindowStyle.width = _newWidth + "px";
-                        zWindowStyle.left = (_lastOffsetLeft - _pageXPos) + "px";
+                    if (__newWidth > 200) {
+                        _zWindowStyle.width = __newWidth + "px";
+                        _zWindowStyle.left = (__lastOffsetLeft - __pageXPos) + "px";
                     } else {
-                        zWindowStyle.width = "200px";
-                        zWindowStyle.left = ((_lastOffsetLeft + _lastWidth) - 200) + "px";
+                        _zWindowStyle.width = "200px";
+                        _zWindowStyle.left = ((__lastOffsetLeft + __lastWidth) - 200) + "px";
                     }
                 }
                 
-                if (_resizer === "right" || _resizer === "bottom-right" || _resizer === "top-right")
+                if (__resizer === "right" || __resizer === "bottom-right" || __resizer === "top-right")
                 {
-                    _newWidth = (_pageX > _lastPageX ? _lastWidth + _pageXNeg : _lastWidth - _pageXPos);
-                    zWindowStyle.width = (_newWidth > 200 ? _newWidth : 200) + "px";
+                    __newWidth = (__pageX > __lastPageX ? __lastWidth + __pageXNeg : __lastWidth - __pageXPos);
+                    _zWindowStyle.width = (__newWidth > 200 ? __newWidth : 200) + "px";
                 }
                 
-                if (_resizer === "top" || _resizer === "top-left" || _resizer === "top-right")
+                if (__resizer === "top" || __resizer === "top-left" || __resizer === "top-right")
                 {
-                    _newHeight = (_pageY > _lastPageY ? _lastHeight + _pageYPos : _lastHeight - _pageYNeg);
+                    __newHeight = (__pageY > __lastPageY ? __lastHeight + __pageYPos : __lastHeight - __pageYNeg);
                     
-                    if (_newHeight > 200) {
-                        zWindowStyle.height = _newHeight + "px";
-                        zWindowStyle.top = (_lastOffsetTop - _pageYPos) + "px";
+                    if (__newHeight > 200) {
+                        _zWindowStyle.height = __newHeight + "px";
+                        _zWindowStyle.top = (__lastOffsetTop - __pageYPos) + "px";
                     } else {
-                        zWindowStyle.height = "200px";
-                        zWindowStyle.top = ((_lastOffsetTop + _lastHeight) - 200) + "px";
+                        _zWindowStyle.height = "200px";
+                        _zWindowStyle.top = ((__lastOffsetTop + __lastHeight) - 200) + "px";
                     }
                 }
                 
-                if (_resizer === "bottom" || _resizer === "bottom-left" || _resizer === "bottom-right")
+                if (__resizer === "bottom" || __resizer === "bottom-left" || __resizer === "bottom-right")
                 {
-                    _newHeight = (_pageY > _lastPageY ? _lastHeight + _pageYNeg : _lastHeight - _pageYPos);
-                    zWindowStyle.height = (_newHeight > 200? _newHeight : 200) + "px";
+                    __newHeight = (__pageY > __lastPageY ? __lastHeight + __pageYNeg : __lastHeight - __pageYPos);
+                    _zWindowStyle.height = (__newHeight > 200? __newHeight : 200) + "px";
                 }
                 
                 return false;
             }
         }).mouseup(function(e) {
-            if (drag) {
-                zWindow.className = zWindow.className.replace(/ active/i,"");
+            if (_drag) {
+                _zWindow.className = _zWindow.className.replace(/ active/i,"");
                 
-                drag = false;
+                _drag = false;
                 return false;
             }
             
-            if (resize) {
-                /*var _resizer = onMouseDownObj.resizer
-                    ,_pageX = e.pageX
-                    ,_pageY = e.pageY
-                    ,_lastPageX = onMouseDownObj.pageX
-                    ,_lastPageY = onMouseDownObj.pageY
-                    ,_newWidth
-                    ,_newHeight
-                ;
+            if (_resize) {
                 
-                if (_resizer === "left" || _resizer === "top-left" || _resizer === "bottom-left")
-                {
-                    _newWidth = (_pageX > _lastPageX ? zWindow.offsetWidth + (_lastPageX - _pageX) : zWindow.offsetWidth - (_pageX - _lastPageX));
-                    zWindowStyle.width = (_newWidth > 15 ? _newWidth : 15) + "px";
-                    zWindowStyle.left = (zWindow.offsetLeft - (_lastPageX - _pageX)) + "px";
-                }
-                
-                if (_resizer === "right" || _resizer === "bottom-right" || _resizer === "top-right")
-                {
-                    _newWidth = (_pageX > _lastPageX ? zWindow.offsetWidth + (_pageX - _lastPageX) : zWindow.offsetWidth - (_lastPageX - _pageX));
-                    zWindowStyle.width = (_newWidth > 15 ? _newWidth : 15) + "px";
-                }
-                
-                if (_resizer === "top" || _resizer === "top-left" || _resizer === "top-right")
-                {
-                    _newHeight = (_pageY > _lastPageY ? zWindow.offsetHeight + (_lastPageY - _pageY) : zWindow.offsetHeight - (_pageY - _lastPageY));
-                    zWindowStyle.height = (_newHeight > 15? _newHeight : 15) + "px";
-                    zWindowStyle.top = (zWindow.offsetTop - (_lastPageY - _pageY)) + "px";
-                }
-                
-                if (_resizer === "bottom" || _resizer === "bottom-left" || _resizer === "bottom-right")
-                {
-                    _newHeight = (_pageY > _lastPageY ? zWindow.offsetHeight + (_pageY - _lastPageY) : zWindow.offsetHeight - (_lastPageY - _pageY));
-                    zWindowStyle.height = (_newHeight > 15? _newHeight : 15) + "px";
-                }*/
-                
-                resize = false;   
+                _resize = false;   
                 return false;
             }
         });

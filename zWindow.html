@@ -1,80 +1,99 @@
-<style>
-    /* --------------------------------------- Main --------------------------------------- */
-    .zWindow {
-        /*position : absolute;*/
-        z-index : 1000;
-        top : 0px;
-        left : 0px;
-    }
-    
-    /* --------------------------------------- Components --------------------------------------- */
-    .zWindow .resizer {
-        position : absolute;
-    }
-    
-    .zWindow .resizer.resizer-w {
-        cursor : ew-resize;
-        height : 100%;
-        width : 2px;
-        background-color : #253238;
-    }
-    
-    .zWindow .resizer.resizer-h {
-        cursor : ns-resize;
-        height : 2px;
-        width : 100%;
-        background-color : #253238;
-    }
-    
-    .zWindow .resizer.resizer-wha {
-        cursor : nesw-resize;
-        height : 5px;
-        width : 5px;
-        background-color : #f63a23;
-    }
-    
-    .zWindow .resizer.resizer-whb {
-        cursor : nwse-resize;
-        height : 5px;
-        width : 5px;
-        background-color : #f63a23;
-    }
-    
-    /* --------------------------------------- State --------------------------------------- */
-    .zWindow.active {
-        z-index : 2000;
-        cursor : move;
-    }
-    
-    /* --------------------------------------- Utilities --------------------------------------- */
-    .zWindow .top {
-        top : 0;
-    }
-    
-    .zWindow .bottom {
-        bottom : 0;
-    }
-    
-    .zWindow .left {
-        left : 0;
-    }
-    
-    .zWindow .right {
-        right : 0;
-    }
-    
-    
-    
-    
-    #window1 {
-        background-color : skyblue;
-    }
-    
-    #window2 {
-        background-color : orange;
-    }
-</style>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>zWindow</title>
 
-<div class="zPanel" style="position:relative;">
-    
-</div>
+    <style>
+        /* --------------------------------------- Main --------------------------------------- */
+        .zWindow {
+            /*position : absolute;*/
+            z-index : 1000;
+            top : 0px;
+            left : 0px;
+        }
+        
+        /* --------------------------------------- Components --------------------------------------- */
+        .zWindow .resizer {
+            position : absolute;
+        }
+        
+        .zWindow .resizer.resizer-w {
+            cursor : ew-resize;
+            height : 100%;
+            width : 2px;
+            background-color : #253238;
+        }
+        
+        .zWindow .resizer.resizer-h {
+            cursor : ns-resize;
+            height : 2px;
+            width : 100%;
+            background-color : #253238;
+        }
+        
+        .zWindow .resizer.resizer-wha {
+            cursor : nesw-resize;
+            height : 5px;
+            width : 5px;
+            background-color : #f63a23;
+        }
+        
+        .zWindow .resizer.resizer-whb {
+            cursor : nwse-resize;
+            height : 5px;
+            width : 5px;
+            background-color : #f63a23;
+        }
+        
+        /* --------------------------------------- State --------------------------------------- */
+        .zWindow.active {
+            z-index : 2000;
+            cursor : move;
+        }
+        
+        /* --------------------------------------- Utilities --------------------------------------- */
+        .zWindow .top {
+            top : 0;
+        }
+        
+        .zWindow .bottom {
+            bottom : 0;
+        }
+        
+        .zWindow .left {
+            left : 0;
+        }
+        
+        .zWindow .right {
+            right : 0;
+        }
+        
+        
+        
+        
+        #window1 {
+            background-color : skyblue;
+        }
+        
+        #window2 {
+            background-color : orange;
+        }
+
+
+
+        .zPanel {
+            position : relative;
+            box-shadow: 4px 4px 4px 4px;
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="zPanel" style="position:relative;"></div>
+
+<script src="jquery-1.12.0.min.js"></script>
+<script src="zWindow.js"></script>
+</body>
+</html>
