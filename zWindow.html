@@ -1,7 +1,6 @@
 <style>
     /* --------------------------------------- Main --------------------------------------- */
     .zWindow {
-        /*position : absolute;*/
         z-index : 1000;
         top : 0px;
         left : 0px;
@@ -44,6 +43,10 @@
     .zWindow.active {
         z-index : 2000;
         cursor : move;
+    }
+    
+    .zWindow.last-active {
+        z-index : 1500;
     }
     
     /* --------------------------------------- Utilities --------------------------------------- */
