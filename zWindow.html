@@ -4,9 +4,72 @@
         z-index : 1000;
         top : 0px;
         left : 0px;
+        background-color: rgb(236, 239, 241);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        -webkit-transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        -moz-transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        -o-transition: all 0.3s cubic-bezier(.25,.8,.25,1);
     }
     
-    /* --------------------------------------- Components --------------------------------------- */
+    .zWindow .zw-content {
+        position : absolute;
+        width : 100%;
+        height : 100%;
+    }
+    
+    .zWindow .zw-header {
+        position : relative;
+        width : 100%;
+        height : 20px;
+        background: #00c6ff;  /* fallback for old browsers */
+        background: -webkit-linear-gradient(to left, #0072ff, #00c6ff);  /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to left, #0072ff, #00c6ff); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    }
+    
+    .zWindow .zw-header > .zw-title {
+        float: left;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        height: inherit;
+        width: -webkit-calc(100% - 60px);
+        width: expression(100% - 60px);
+        width: -moz-calc(100% - 60px);
+        width: -o-calc(100% - 60px);
+        width: calc(100% - 60px);
+        color: #ffffff;
+        font-weight: bold;
+        line-height: 20px;
+        padding-left: 5px;
+    }
+    
+    .zWindow .zw-header > .zw-toolbar {
+        float: left;
+        overflow: hidden;
+        height: inherit;
+        width: 60px;
+    }
+    
+    .zWindow .zw-button {
+        float: left;
+        height: inherit;
+        width: 20px;
+    }
+    
+    .zWindow .zw-body {
+        position : relative;
+        background-color : #ffffff;
+        overflow: auto;
+        width : 100%;
+        height: -webkit-calc(100% - 20px);
+        height: expression(100% - 20px);
+        height: -moz-calc(100% - 20px);
+        height: -o-calc(100% - 20px);
+        height: calc(100% - 20px);
+    }
+    
+    /* --------------------------------------- Resizers --------------------------------------- */
     .zWindow .resizer {
         position : absolute;
     }
@@ -15,38 +78,39 @@
         cursor : ew-resize;
         height : 100%;
         width : 2px;
-        background-color : #253238;
     }
     
     .zWindow .resizer.resizer-h {
         cursor : ns-resize;
         height : 2px;
         width : 100%;
-        background-color : #253238;
     }
     
     .zWindow .resizer.resizer-wha {
         cursor : nesw-resize;
         height : 5px;
         width : 5px;
-        background-color : #f63a23;
     }
     
     .zWindow .resizer.resizer-whb {
         cursor : nwse-resize;
         height : 5px;
         width : 5px;
-        background-color : #f63a23;
     }
     
     /* --------------------------------------- State --------------------------------------- */
     .zWindow.active {
         z-index : 2000;
-        cursor : move;
+        box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22) !important;
     }
     
     .zWindow.last-active {
         z-index : 1500;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
+    
+    .zWindow.active .zw-header > .zw-title {
+        cursor : move;
     }
     
     /* --------------------------------------- Utilities --------------------------------------- */
@@ -67,15 +131,6 @@
     }
     
     
-    
-    
-    #window1 {
-        background-color : skyblue;
-    }
-    
-    #window2 {
-        background-color : orange;
-    }
 
 
 
@@ -85,4 +140,7 @@
     }
 </style>
 
-<div class="zPanel"></div>
+<div class="zPanel">
+    
+    
+</div>

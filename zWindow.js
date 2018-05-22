@@ -23,7 +23,7 @@ $(document).ready(function() {
         ,"width" : 200
         ,"height" : 200
         ,"position" : "absolute"
-        ,"resizeLimit" : 50
+        ,"resizeLimit" : 100
         /*,"onDragStart" : function(o) {
             console.log(this,o);
         }
@@ -44,12 +44,15 @@ $(document).ready(function() {
         }*/
     });
     
-    /*$(".zPanel").zWindow({
+    $("#window1 .zw-body").zWindow({
         "id" : "window2"
         ,"width" : 200
         ,"height" : 200
-        ,"position" : "fixed"
-    });*/
+        ,"resizeLimit" : 100
+        ,"position" : "absolute"
+        ,"header" : "Header ni"
+        ,"body" : "<h1>Body ni HAHAHAHAHHAHAHAHA</h1>"
+    });
 });
 
 $.fn.zWindow = function(option) {
@@ -60,6 +63,8 @@ $.fn.zWindow = function(option) {
 			,height : 200
 			,position : "absolute"
 			,resizeLimit : 200
+			,header : ""
+			,body : ""
 		};
 		
 		// Merge the default options and user options
@@ -78,6 +83,17 @@ $.fn.zWindow = function(option) {
         
         _$self.append(
             '<div id="' + _settings.id + '" class="zWindow">'
+            + '<div class="zw-content">'
+            +   '<div class="zw-header">'
+            +       '<div class="zw-title">' + _settings.header + '</div>'
+            +       '<div class="zw-toolbar">'
+            +           '<div class="zw-button">Pin</div>'
+            +           '<div class="zw-button"><svg version="1.1" x="0px" y="0px" width="18px" height="18px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve"><g id="Bounding_Boxes"><path fill="none" d="M0,0h24v24H0V0z"/></g><g id="Rounded"><path d="M18,19H6c-0.55,0-1-0.45-1-1V6c0-0.55,0.45-1,1-1h12c0.55,0,1,0.45,1,1v12C19,18.55,18.55,19,18,19z M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3L19,3z"/></g></svg></div>'
+            +           '<div class="zw-button"><svg version="1.1" x="0px" y="0px" width="18px"height="18px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve"><g id="Bounding_Boxes"><path fill="none" d="M0,0h24v24H0V0z"/></g><g id="Rounded"><path d="M18.3,5.71L18.3,5.71c-0.39-0.39-1.02-0.39-1.41,0L12,10.59L7.11,5.7c-0.39-0.39-1.02-0.39-1.41,0l0,0c-0.39,0.39-0.39,1.02,0,1.41L10.59,12L5.7,16.89c-0.39,0.39-0.39,1.02,0,1.41h0c0.39,0.39,1.02,0.39,1.41,0L12,13.41l4.89,4.89c0.39,0.39,1.02,0.39,1.41,0l0,0c0.39-0.39,0.39-1.02,0-1.41L13.41,12l4.89-4.89C18.68,6.73,18.68,6.09,18.3,5.71z"/></g></svg></div>'
+            +       '</div>'
+            +   '</div>'
+            +   '<div class="zw-body">' + _settings.body + '</div>'
+            + '</div>'
             + '<div class="resizer resizer-h top" resize="top"></div>'
             + '<div class="resizer resizer-h bottom" resize="bottom"></div>'
             + '<div class="resizer resizer-w left" resize="left"></div>'
@@ -119,14 +135,13 @@ $.fn.zWindow = function(option) {
             _zWindowObj.selfCompStyle    = _selfCompStyle;
             _zWindowObj.settings         = _settings;
             
-            _zWindow.className += " active";
-            
-            if (__target.id === _settings.id) {
+            if (__target.className === "zw-title" || __target.parentNode.className === "zw-title") {
                 // DRAG SECTION
                 // __subtrahend - used for getting the difference of mouse position
                 var __subtrahend = _zWindowObj.subtrahend;
                 
                 _zWindowObj.drag = true;
+                _zWindow.className += " active";
                 
                 if (_zWindowCompStyle.position === "absolute") {
                     // zWindow is absolute
@@ -171,6 +186,7 @@ $.fn.zWindow = function(option) {
                 // RESIZE SECTION
                 var __onMouseDownObj          = _zWindowObj.onMouseDownObj;
                 _zWindowObj.resize            = true;
+                _zWindow.className            += " active";
                 
                 __onMouseDownObj.resizer      = __target.attributes.resize.value;
                 __onMouseDownObj.pageX        = e.pageX;
@@ -351,4 +367,4 @@ $.fn.zWindow = function(option) {
             _zWindowObj.isBodyEventOn = true;
         }
     }
-};
+};  
