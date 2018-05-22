@@ -24,36 +24,32 @@ $(document).ready(function() {
         ,"height" : 200
         ,"position" : "absolute"
         ,"resizeLimit" : 50
-        ,"dragEvent" : {
-            "onStart" : function(o) {
-                console.log(this,o);
-            }
-            ,"onDrag" : function(o) {
-                console.log(this,o);
-            }
-            ,"onEnd" : function(o) {
-                console.log(this,o);
-            }
+        /*,"onDragStart" : function(o) {
+            console.log(this,o);
         }
-        ,"resizeEvent" : {
-            "onStart" : function(o) {
-                console.log(this,o);
-            }
-            ,"onResize" : function(o) {
-                console.log(this,o);
-            }
-            ,"onEnd" : function(o) {
-                console.log(this,o);
-            }
+        ,"onResizeStart" : function(o) {
+            console.log(this,o);
         }
+        ,"onDrag" : function(o) {
+            console.log(this,o);
+        }
+        ,"onResize" : function(o) {
+            console.log(this,o);
+        }
+        ,"onDragEnd" : function(o) {
+            console.log(this,o);
+        }
+        ,"onResizeEnd" : function(o) {
+            console.log(this,o);
+        }*/
     });
     
-    $(".zPanel").zWindow({
+    /*$(".zPanel").zWindow({
         "id" : "window2"
         ,"width" : 200
         ,"height" : 200
         ,"position" : "fixed"
-    });
+    });*/
 });
 
 $.fn.zWindow = function(option) {
@@ -64,8 +60,6 @@ $.fn.zWindow = function(option) {
 			,height : 200
 			,position : "absolute"
 			,resizeLimit : 200
-			,dragEvent : {}
-			,resizeEvent : {}
 		};
 		
 		// Merge the default options and user options
@@ -80,8 +74,6 @@ $.fn.zWindow = function(option) {
             ,_zWindow
             ,_zWindowStyle
             ,_zWindowCompStyle
-            ,_dragEvent         = _settings.dragEvent
-            ,_resizeEvent       = _settings.resizeEvent
         ;
         
         _$self.append(
@@ -107,6 +99,16 @@ $.fn.zWindow = function(option) {
         _zWindow            = _$zWindow[0];
         _zWindowStyle       = _zWindow.style;
         _zWindowCompStyle   = window.getComputedStyle(_zWindow);
+        
+        // Drag Events
+        _zWindow.onDragStart = _settings.onDragStart;
+        _zWindow.onDrag      = _settings.onDrag;
+        _zWindow.onDragEnd   = _settings.onDragEnd;
+        
+        // Resize Events
+        _zWindow.onResizeStart  = _settings.onResizeStart;
+        _zWindow.onResize       = _settings.onResize;
+        _zWindow.onResizeEnd    = _settings.onResizeEnd;
         
         _$zWindow.mousedown(function(e) {
             var __target = e.target;
@@ -157,8 +159,8 @@ $.fn.zWindow = function(option) {
                     __subtrahend.x = e.offsetX;
                 }
                 
-                if (typeof _dragEvent.onStart === "function") {
-                    _dragEvent.onStart({
+                if (typeof _zWindow.onDragStart === "function") {
+                    _zWindow.onDragStart({
                         x : _zWindow.offsetTop
                         ,y : _zWindow.offsetLeft
                         ,width : _zWindow.offsetWidth
@@ -178,8 +180,8 @@ $.fn.zWindow = function(option) {
                 __onMouseDownObj.offsetTop    = _zWindow.offsetTop;
                 __onMouseDownObj.offsetLeft   = _zWindow.offsetLeft;
                 
-                if (typeof _resizeEvent.onStart === "function") {
-                    _resizeEvent.onStart({
+                if (typeof _zWindow.onResizeStart === "function") {
+                    _zWindow.onResizeStart({
                         x : _zWindow.offsetTop
                         ,y : _zWindow.offsetLeft
                         ,width : _zWindow.offsetWidth
@@ -199,7 +201,7 @@ $.fn.zWindow = function(option) {
                 if (__zWindowObj.drag) {
                     var __zWStyle       = __zWindowObj.zWindowStyle
                         ,__zWSubtrahend = __zWindowObj.subtrahend
-                        ,__settings     = __zWindowObj.settings
+                        ,__zWindow      = __zWindowObj.zWindow
                     ;
                     
                     if (__zWindowObj.zWindowCompStyle.position === "absolute") {
@@ -228,9 +230,8 @@ $.fn.zWindow = function(option) {
                         __zWStyle.left  = e.clientX - __zWSubtrahend.x + "px";
                     }
                     
-                    if (typeof __settings.dragEvent.onDrag === "function") {
-                        var __zWindow = __zWindowObj.zWindow;
-                        __settings.dragEvent.onDrag({
+                    if (typeof __zWindow.onDrag === "function") {
+                        __zWindow.onDrag({
                             x : __zWindow.offsetTop
                             ,y : __zWindow.offsetLeft
                             ,width : __zWindow.offsetWidth
@@ -250,6 +251,7 @@ $.fn.zWindow = function(option) {
                         ,__lastHeight       = __onMouseDownObj.height
                         ,__lastOffsetTop    = __onMouseDownObj.offsetTop
                         ,__lastOffsetLeft   = __onMouseDownObj.offsetLeft
+                        
                         ,__pageX            = e.pageX
                         ,__pageY            = e.pageY
                         ,__newWidth         = 0
@@ -260,8 +262,8 @@ $.fn.zWindow = function(option) {
                         ,__pageYB           = __pageY - __lastPageY
                         
                         ,__zWStyle          = __zWindowObj.zWindowStyle
-                        __settings          = __zWindowObj.settings
-                        ,__resizeLimit      = __settings.resizeLimit
+                        ,__resizeLimit      = __zWindowObj.settings.resizeLimit
+                        ,__zWindow          = __zWindowObj.zWindow
                     ;
                     
                     if (__resizer === "left" || __resizer === "top-left" || __resizer === "bottom-left")
@@ -302,9 +304,8 @@ $.fn.zWindow = function(option) {
                         __zWStyle.height = (__newHeight > __resizeLimit ? __newHeight : __resizeLimit) + "px";
                     }
                     
-                    if (typeof __settings.resizeEvent.onResize === "function") {
-                        var __zWindow = __zWindowObj.zWindow;
-                        __settings.resizeEvent.onResize({
+                    if (typeof __zWindow.onResize === "function") {
+                        __zWindow.onResize({
                             x : __zWindow.offsetTop
                             ,y : __zWindow.offsetLeft
                             ,width : __zWindow.offsetWidth
@@ -316,16 +317,15 @@ $.fn.zWindow = function(option) {
                 }
             }).mouseup(function() {
                 var __zWindowObj = zsi.__zWindow;
-                
+
                 if (__zWindowObj.drag || __zWindowObj.resize) {
                     var __zWindow = __zWindowObj.zWindow;
-                    var __settings = __zWindowObj.settings;
                     
                     $(".zWindow.last-active").removeClass("last-active");
                     __zWindow.className  = __zWindow.className.replace(/ active/gi,"") + " last-active";
                     
-                    if (__zWindowObj.drag && typeof __settings.dragEvent.onEnd === "function") {
-                        __settings.dragEvent.onEnd({
+                    if (__zWindowObj.drag && typeof __zWindow.onDragEnd === "function") {
+                        __zWindow.onDragEnd({
                             x : __zWindow.offsetTop
                             ,y : __zWindow.offsetLeft
                             ,width : __zWindow.offsetWidth
@@ -333,8 +333,8 @@ $.fn.zWindow = function(option) {
                         });
                     }
                     
-                    if (__zWindowObj.resize && typeof __settings.resizeEvent.onEnd === "function") {
-                        __settings.resizeEvent.onEnd({
+                    if (__zWindowObj.resize && typeof __zWindow.onResizeEnd === "function") {
+                        __zWindow.onResizeEnd({
                             x : __zWindow.offsetTop
                             ,y : __zWindow.offsetLeft
                             ,width : __zWindow.offsetWidth
@@ -342,8 +342,8 @@ $.fn.zWindow = function(option) {
                         });
                     }
                     
-                    __zWindowObj.drag               = false;
-                    __zWindowObj.resize             = false;
+                    __zWindowObj.drag = false;
+                    __zWindowObj.resize = false;
                     return false;
                 }
             });
@@ -351,4 +351,4 @@ $.fn.zWindow = function(option) {
             _zWindowObj.isBodyEventOn = true;
         }
     }
-};     
+};
