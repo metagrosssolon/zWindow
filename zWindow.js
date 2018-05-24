@@ -1,16 +1,15 @@
 zsi.__zWindow = {
-    drag : false
-    ,resize : false
-    ,subtrahend : {}
-    ,onMouseDownObj : {}
-    ,body : document.querySelector("body")
-    ,zWindow : null
-    ,zWindowStyle : null
-    ,zWindowCompStyle : null
-    ,selfCompStyle : null
-    ,settings : {}
+    "drag" : false
+    ,"resize" : false
+    ,"onMouseDownObj" : {}
+    
+    ,"zWindow" : null
+    ,"zWindowStyle" : null
+    ,"zWindowCompStyle" : null
+    ,"self" : null
+    ,"selfCompStyle" : null
+    ,"settings" : {}
 };
-
 
 $(document).ready(function() {
     $(".zPanel").css({
@@ -20,8 +19,18 @@ $(document).ready(function() {
     
     $(".zPanel").zWindow({
         "id" : "window1"
-        ,"width" : 200
-        ,"height" : 200
+        ,"width" : 500
+        ,"height" : 500
+        ,"resizeLimit" : 100
+        ,"position" : "absolute"
+        ,"header" : "Header ni"
+        ,"body" : "<h1>Body ni HAHAHAHAHHAHAHAHA</h1>"
+    });
+    
+    $("#window1 .zw-body").zWindow({
+        "id" : "window2"
+        ,"width" : 100
+        ,"height" : 100
         ,"position" : "absolute"
         ,"resizeLimit" : 100
         /*,"onDragStart" : function(o) {
@@ -43,32 +52,22 @@ $(document).ready(function() {
             console.log(this,o);
         }*/
     });
-    
-    $("#window1 .zw-body").zWindow({
-        "id" : "window2"
-        ,"width" : 200
-        ,"height" : 200
-        ,"resizeLimit" : 100
-        ,"position" : "absolute"
-        ,"header" : "Header ni"
-        ,"body" : "<h1>Body ni HAHAHAHAHHAHAHAHA</h1>"
-    });
 });
 
 $.fn.zWindow = function(option) {
     if (this.length) {
         // Default initialization
 		var _default = {
-			width : 200
-			,height : 200
-			,position : "absolute"
-			,resizeLimit : 200
-			,header : ""
-			,body : ""
+			"width" : 200
+			,"height" : 200
+			,"position" : "absolute"
+			,"resizeLimit" : 200
+			,"header" : ""
+			,"body" : ""
 		};
 		
 		// Merge the default options and user options
-		var _settings = $.extend( true , _default, option );
+		var _settings = $.extend( true , _default , option );
         
         var _zWindowObj         = zsi.__zWindow
             ,_$self             = this
@@ -126,82 +125,64 @@ $.fn.zWindow = function(option) {
         _zWindow.onResize       = _settings.onResize;
         _zWindow.onResizeEnd    = _settings.onResizeEnd;
         
-        _$zWindow.mousedown(function(e) {
+        // DRAG SECTION
+        _$zWindow.find(".zw-title").mousedown(function(e) {
             var __target = e.target;
             
-            _zWindowObj.zWindow          = _zWindow;
-            _zWindowObj.zWindowStyle     = _zWindowStyle;
-            _zWindowObj.zWindowCompStyle = _zWindowCompStyle;
-            _zWindowObj.selfCompStyle    = _selfCompStyle;
-            _zWindowObj.settings         = _settings;
+            _zWindowObj.zWindow             = _zWindow;
+            _zWindowObj.zWindowStyle        = _zWindowStyle;
+            _zWindowObj.zWindowCompStyle    = _zWindowCompStyle;
+            _zWindowObj.self                = _self;
+            _zWindowObj.selfCompStyle       = _selfCompStyle;
+            _zWindowObj.settings            = _settings;
             
             if (__target.className === "zw-title" || __target.parentNode.className === "zw-title") {
-                // DRAG SECTION
-                // __subtrahend - used for getting the difference of mouse position
-                var __subtrahend = _zWindowObj.subtrahend;
+                var __onMouseDownObj  = _zWindowObj.onMouseDownObj
+                    ,__zWoffsetTop    = _zWindow.offsetTop
+                    ,__zWoffsetLeft   = _zWindow.offsetLeft
+                    ,__zWoffsetWidth  = _zWindow.offsetWidth
+                    ,__zWoffsetHeight = _zWindow.offsetHeight
+                ;
                 
-                _zWindowObj.drag = true;
+                _zWindowObj.drag    = true;
                 _zWindow.className += " active";
                 
                 if (_zWindowCompStyle.position === "absolute") {
                     // zWindow is absolute
-                    var __selfPosition = _selfCompStyle.position
-                        ,__bodyScroll  = {
-                            top : (__selfPosition === "fixed" ? _zWindowObj.body.scrollTop : 0)
-                            ,left : (__selfPosition === "fixed" ? _zWindowObj.body.scrollLeft : 0)
-                        }
-                        ,__selfOffsetTop = _self.offsetTop
-                        ,__selfOffsetLeft = _self.offsetLeft
-                    ;
-                    
-                    if (__selfPosition === "initial" || __selfPosition === "static") {
-                        __subtrahend.y = e.offsetY;
-                        __subtrahend.x = e.offsetX;
-                    } else {
-                        __subtrahend.y = e.offsetY + __selfOffsetTop + __bodyScroll.top;
-                        __subtrahend.x = e.offsetX + __selfOffsetLeft + __bodyScroll.left;
-                    }
+                    var __selfPosition = _selfCompStyle.position;
                     
                     _zWindowObj.dragLimit = {
-                        top : __selfOffsetTop + __bodyScroll.top
-                        ,left : __selfOffsetLeft + __bodyScroll.left
-                        ,bottom : __selfOffsetTop + _self.offsetHeight + __bodyScroll.top
-                        ,right : __selfOffsetLeft + _self.offsetWidth + __bodyScroll.left
+                        "bottom" : _self.offsetHeight
+                        ,"right" : _self.offsetWidth
                     };
+                    
+                    if (__selfPosition === "initial" || __selfPosition === "static") {
+                        __onMouseDownObj.subtrahend = { "y" : e.offsetY , "x" : e.offsetX };
+                    } else {
+                        var _rootOffset = getRootOffset(_self);
+                        
+                        __onMouseDownObj.subtrahend = { 
+                            "y" : e.pageY - __zWoffsetTop 
+                            , "x" : e.pageX - __zWoffsetLeft
+                        };
+                        __onMouseDownObj.selfOffset = {
+                            "top"   : _rootOffset.top + e.offsetY
+                            ,"left" : _rootOffset.left + e.offsetX
+                        };
+                        __onMouseDownObj.width = __zWoffsetWidth;
+                        __onMouseDownObj.height = __zWoffsetHeight;
+                    }
                 } else {
                     // zWindow is fixed
-                    __subtrahend.y = e.offsetY;
-                    __subtrahend.x = e.offsetX;
+                    __onMouseDownObj.subtrahend = { "y" : e.offsetY , "x" : e.offsetX };
                 }
                 
                 if (typeof _zWindow.onDragStart === "function") {
                     _zWindow.onDragStart({
-                        x : _zWindow.offsetTop
-                        ,y : _zWindow.offsetLeft
-                        ,width : _zWindow.offsetWidth
-                        ,height : _zWindow.offsetHeight
-                    });
-                }
-            } else if (__target.classList[0] === "resizer") {
-                // RESIZE SECTION
-                var __onMouseDownObj          = _zWindowObj.onMouseDownObj;
-                _zWindowObj.resize            = true;
-                _zWindow.className            += " active";
-                
-                __onMouseDownObj.resizer      = __target.attributes.resize.value;
-                __onMouseDownObj.pageX        = e.pageX;
-                __onMouseDownObj.pageY        = e.pageY;
-                __onMouseDownObj.width        = _zWindow.offsetWidth;
-                __onMouseDownObj.height       = _zWindow.offsetHeight;
-                __onMouseDownObj.offsetTop    = _zWindow.offsetTop;
-                __onMouseDownObj.offsetLeft   = _zWindow.offsetLeft;
-                
-                if (typeof _zWindow.onResizeStart === "function") {
-                    _zWindow.onResizeStart({
-                        x : _zWindow.offsetTop
-                        ,y : _zWindow.offsetLeft
-                        ,width : _zWindow.offsetWidth
-                        ,height : _zWindow.offsetHeight
+                        "top" : __zWoffsetTop
+                        ,"left" : __zWoffsetLeft
+                        ,"width" : __zWoffsetWidth
+                        ,"height" : __zWoffsetHeight
                     });
                 }
             }
@@ -210,15 +191,52 @@ $.fn.zWindow = function(option) {
             e.preventDefault();
         });
         
+        // RESIZE SECTION
+        _$zWindow.find(".resizer").mousedown(function(e) {
+            console.log(this);
+            var __target          = e.target
+                ,__zWoffsetTop    = _zWindow.offsetTop
+                ,__zWoffsetLeft   = _zWindow.offsetLeft
+                ,__zWoffsetWidth  = _zWindow.offsetWidth
+                ,__zWoffsetHeight = _zWindow.offsetHeight
+            ;
+            
+            _zWindowObj.resize = true;
+            _zWindow.className += " active";
+            
+            _zWindowObj.onMouseDownObj = {
+                "resizer"   : __target.attributes.resize.value
+                ,"pageX"    : e.pageX
+                ,"pageY"    : e.pageY
+                ,"top"      : __zWoffsetTop
+                ,"left"     : __zWoffsetLeft
+                ,"width"    : __zWoffsetLeft
+                ,"height"   : __zWoffsetHeight
+            };
+            
+            if (typeof _zWindow.onResizeStart === "function") {
+                _zWindow.onResizeStart({
+                    "top"       : __zWoffsetTop
+                    ,"left"     : __zWoffsetLeft
+                    ,"width"    : __zWoffsetWidth
+                    ,"height"   : __zWoffsetHeight
+                });
+            }
+            
+            // Prevent browser mouse down/up bug
+            e.preventDefault();
+        });
+        
         if (typeof _zWindowObj.isBodyEventOn === "undefined" || _zWindowObj.isBodyEventOn === false) {
             $("body").mousemove(function(e) {
-                var __zWindowObj = zsi.__zWindow;
+                var __zWindowObj = zsi.__zWindow
+                    ,__zWindow = __zWindowObj.zWindow
+                    ,__zWStyle = __zWindowObj.zWindowStyle
+                    ,__onMouseDownObj = __zWindowObj.onMouseDownObj
+                ;
                 
                 if (__zWindowObj.drag) {
-                    var __zWStyle       = __zWindowObj.zWindowStyle
-                        ,__zWSubtrahend = __zWindowObj.subtrahend
-                        ,__zWindow      = __zWindowObj.zWindow
-                    ;
+                    var __subtrahend = __onMouseDownObj.subtrahend;
                     
                     if (__zWindowObj.zWindowCompStyle.position === "absolute") {
                         // zWindow is absolute
@@ -226,32 +244,46 @@ $.fn.zWindow = function(option) {
                             ,__pageX = e.pageX
                             ,__selfPosition = __zWindowObj.selfCompStyle.position
                         ;
-                        
-                        if (__selfPosition === "relative" || __selfPosition === "absolute" || __selfPosition === "fixed") {
-                            // __dragLimit - to freeze the zWindow if the mouse leaves the parent target
-                            var __dragLimit = __zWindowObj.dragLimit;
-                            
-                            if (__pageY >= __dragLimit.top && __pageY <= __dragLimit.bottom
-                            && __pageX >= __dragLimit.left && __pageX <= __dragLimit.right) {
-                                __zWStyle.top   = __pageY - __zWSubtrahend.y + "px";
-                                __zWStyle.left  = __pageX - __zWSubtrahend.x + "px";
-                            }
+                
+                        if (__selfPosition === "initial" || __selfPosition === "static") {
+                            __zWStyle.top   = __pageY - __subtrahend.y + "px";
+                            __zWStyle.left  = __pageX - __subtrahend.x + "px";
                         } else {
-                            __zWStyle.top   = __pageY - __zWSubtrahend.y + "px";
-                            __zWStyle.left  = __pageX - __zWSubtrahend.x + "px";
+                            var __dragLimit     = __zWindowObj.dragLimit
+                                ,__dlBottom     = __dragLimit.bottom
+                                ,__dlRight      = __dragLimit.right
+                                ,__selfOffset   = __onMouseDownObj.selfOffset
+                                ,__zWWidth      = __onMouseDownObj.width
+                                ,__zWHeight     = __onMouseDownObj.height
+                                ,__currentY     = __pageY - __selfOffset.top
+                                ,__currentX     = __pageX - __selfOffset.left
+                                ,__newY         = 0
+                                ,__newX         = 0
+                            ;
+                            
+                            if (__currentY < 0) { __newY = 0; } 
+                            else if (__currentY + __zWHeight > __dlBottom) { __newY = (__dlBottom - __zWHeight); }
+                            else { __newY = __pageY - __subtrahend.y; }
+                            
+                            if (__currentX < 0) { __newX = 0; } 
+                            else if (__currentX + __zWWidth > __dlRight) { __newX = (__dlRight - __zWWidth); }
+                            else { __newX = __pageX - __subtrahend.x; }
+                            
+                            __zWStyle.top = __newY + "px";
+                            __zWStyle.left = __newX + "px";
                         }
                     } else {
                         // zWindow is fixed
-                        __zWStyle.top   = e.clientY - __zWSubtrahend.y + "px";
-                        __zWStyle.left  = e.clientX - __zWSubtrahend.x + "px";
+                        __zWStyle.top   = e.clientY - __subtrahend.y + "px";
+                        __zWStyle.left  = e.clientX - __subtrahend.x + "px";
                     }
                     
                     if (typeof __zWindow.onDrag === "function") {
                         __zWindow.onDrag({
-                            x : __zWindow.offsetTop
-                            ,y : __zWindow.offsetLeft
-                            ,width : __zWindow.offsetWidth
-                            ,height : __zWindow.offsetHeight
+                            "top"       : __zWindow.offsetTop
+                            ,"left"     : __zWindow.offsetLeft
+                            ,"width"    : __zWindow.offsetWidth
+                            ,"height"   : __zWindow.offsetHeight
                         });
                     }
                     
@@ -259,14 +291,13 @@ $.fn.zWindow = function(option) {
                 }
                 
                 if (__zWindowObj.resize) {
-                    var __onMouseDownObj    = __zWindowObj.onMouseDownObj
-                        ,__resizer          = __onMouseDownObj.resizer
+                    var __resizer           = __onMouseDownObj.resizer
                         ,__lastPageX        = __onMouseDownObj.pageX
                         ,__lastPageY        = __onMouseDownObj.pageY
+                        ,__lastTop          = __onMouseDownObj.top
+                        ,__lastLeft         = __onMouseDownObj.left
                         ,__lastWidth        = __onMouseDownObj.width
                         ,__lastHeight       = __onMouseDownObj.height
-                        ,__lastOffsetTop    = __onMouseDownObj.offsetTop
-                        ,__lastOffsetLeft   = __onMouseDownObj.offsetLeft
                         
                         ,__pageX            = e.pageX
                         ,__pageY            = e.pageY
@@ -277,9 +308,7 @@ $.fn.zWindow = function(option) {
                         ,__pageYA           = __lastPageY - __pageY
                         ,__pageYB           = __pageY - __lastPageY
                         
-                        ,__zWStyle          = __zWindowObj.zWindowStyle
                         ,__resizeLimit      = __zWindowObj.settings.resizeLimit
-                        ,__zWindow          = __zWindowObj.zWindow
                     ;
                     
                     if (__resizer === "left" || __resizer === "top-left" || __resizer === "bottom-left")
@@ -288,10 +317,10 @@ $.fn.zWindow = function(option) {
                         
                         if (__newWidth > __resizeLimit) {
                             __zWStyle.width = __newWidth + "px";
-                            __zWStyle.left = (__lastOffsetLeft - __pageXA) + "px";
+                            __zWStyle.left = (__lastLeft - __pageXA) + "px";
                         } else {
                             __zWStyle.width = __resizeLimit + "px";
-                            __zWStyle.left = ((__lastOffsetLeft + __lastWidth) - __resizeLimit) + "px";
+                            __zWStyle.left = ((__lastLeft + __lastWidth) - __resizeLimit) + "px";
                         }
                     }
                     
@@ -307,10 +336,10 @@ $.fn.zWindow = function(option) {
                         
                         if (__newHeight > __resizeLimit) {
                             __zWStyle.height = __newHeight + "px";
-                            __zWStyle.top = (__lastOffsetTop - __pageYA) + "px";
+                            __zWStyle.top = (__lastTop - __pageYA) + "px";
                         } else {
                             __zWStyle.height = __resizeLimit + "px";
-                            __zWStyle.top = ((__lastOffsetTop + __lastHeight) - __resizeLimit) + "px";
+                            __zWStyle.top = ((__lastTop + __lastHeight) - __resizeLimit) + "px";
                         }
                     }
                     
@@ -322,43 +351,46 @@ $.fn.zWindow = function(option) {
                     
                     if (typeof __zWindow.onResize === "function") {
                         __zWindow.onResize({
-                            x : __zWindow.offsetTop
-                            ,y : __zWindow.offsetLeft
-                            ,width : __zWindow.offsetWidth
-                            ,height : __zWindow.offsetHeight
+                            "top" : __zWindow.offsetTop
+                            ,"left" : __zWindow.offsetLeft
+                            ,"width" : __zWindow.offsetWidth
+                            ,"height" : __zWindow.offsetHeight
                         });
                     }
                     
                     return false;
                 }
             }).mouseup(function() {
-                var __zWindowObj = zsi.__zWindow;
-
-                if (__zWindowObj.drag || __zWindowObj.resize) {
+                var __zWindowObj = zsi.__zWindow
+                    ,__drag      = __zWindowObj.drag
+                    ,__resize    = __zWindowObj.resize
+                ;
+                
+                if (__drag || __resize) {
                     var __zWindow = __zWindowObj.zWindow;
                     
                     $(".zWindow.last-active").removeClass("last-active");
                     __zWindow.className  = __zWindow.className.replace(/ active/gi,"") + " last-active";
                     
-                    if (__zWindowObj.drag && typeof __zWindow.onDragEnd === "function") {
+                    if (__drag && typeof __zWindow.onDragEnd === "function") {
                         __zWindow.onDragEnd({
-                            x : __zWindow.offsetTop
-                            ,y : __zWindow.offsetLeft
-                            ,width : __zWindow.offsetWidth
-                            ,height : __zWindow.offsetHeight
+                            "top"       : __zWindow.offsetTop
+                            ,"left"     : __zWindow.offsetLeft
+                            ,"width"    : __zWindow.offsetWidth
+                            ,"height"   : __zWindow.offsetHeight
                         });
                     }
                     
-                    if (__zWindowObj.resize && typeof __zWindow.onResizeEnd === "function") {
+                    if (__resize && typeof __zWindow.onResizeEnd === "function") {
                         __zWindow.onResizeEnd({
-                            x : __zWindow.offsetTop
-                            ,y : __zWindow.offsetLeft
-                            ,width : __zWindow.offsetWidth
-                            ,height : __zWindow.offsetHeight
+                            "top"       : __zWindow.offsetTop
+                            ,"left"     : __zWindow.offsetLeft
+                            ,"width"    : __zWindow.offsetWidth
+                            ,"height"   : __zWindow.offsetHeight
                         });
                     }
                     
-                    __zWindowObj.drag = false;
+                    __zWindowObj.drag   = false;
                     __zWindowObj.resize = false;
                     return false;
                 }
@@ -367,4 +399,20 @@ $.fn.zWindow = function(option) {
             _zWindowObj.isBodyEventOn = true;
         }
     }
-};  
+};
+
+function getRootOffset(el) {
+    var top = 0;
+    var left = 0;
+    var element = el;
+    
+    // Loop through the DOM tree
+    // and add it's parent's offset to get page offset
+    do {
+        top += element.offsetTop || 0;
+        left += element.offsetLeft || 0;
+        element = element.offsetParent;
+    } while (element);
+    
+    return { top, left };
+}
