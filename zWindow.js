@@ -9,6 +9,7 @@ zsi.__zWindow = {
     ,"selfCompStyle" : null
     ,"settings" : {}
     ,"dragLimit" : {}
+    ,"body" : document.querySelector("body")
 };
 
 $(document).ready(function() {
@@ -27,13 +28,14 @@ $(document).ready(function() {
         ,"body" : "<h1>Body ni HAHAHAHAHHAHAHAHA</h1>"
     });
     
-    $("#window1 .zw-body").eq(0).zWindow({
+    $("#window1 .zw-body").zWindow({
         "id" : "window2"
         ,"width" : 300
         ,"height" : 300
         ,"position" : "absolute"
         ,"resizeLimit" : 300
         ,"header" : "<span>Header sad ni</span>"
+        ,"maximize" : "parent"
         /*,"onDragStart" : function(o) {
             console.log(this,o);
         }
@@ -53,16 +55,6 @@ $(document).ready(function() {
             console.log(this,o);
         }*/
     });
-    
-    $("#window1 .zw-body").eq(0).zWindow({
-        "id" : "window3"
-        ,"width" : 100
-        ,"height" : 100
-        ,"resizeLimit" : 100
-        ,"position" : "absolute"
-        ,"header" : "<span>Window 3</span>"
-        ,"body" : "<h1>Window 3</h1>"
-    });
 });
 
 $.fn.zWindow = function(option) {
@@ -71,24 +63,27 @@ $.fn.zWindow = function(option) {
 		var _default = {
 			"width" : 200
 			,"height" : 200
-			,"position" : "absolute"
+			,"position" : "absolute" // "absolute" || "fixed"
 			,"resizeLimit" : 200
 			,"header" : ""
 			,"body" : ""
+			,"maximize" : "body" // "window" || "parent"
 		};
 		
 		// Merge the default options and user options
 		var _settings = $.extend( true , _default , option );
         
         var _zWindowObj         = zsi.__zWindow
-            ,_$self             = this
-            ,_self              = this[0]
+            ,_$self             = this.eq(0)
+            ,_self              = _$self[0]
             ,_selfStyle         = _self.style
             ,_selfCompStyle     = window.getComputedStyle(_self)
             ,_$zWindow
             ,_zWindow
             ,_zWindowStyle
             ,_zWindowCompStyle
+            
+            ,_storage           = {}
         ;
         
         _$self.append(
@@ -97,9 +92,10 @@ $.fn.zWindow = function(option) {
             +   '<div class="zw-header">'
             +       '<div class="zw-title">' + _settings.header + '</div>'
             +       '<div class="zw-toolbar">'
-            +           '<div class="zw-button">Pin</div>'
-            +           '<div class="zw-button"><svg version="1.1" x="0px" y="0px" width="18px" height="18px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve"><g id="Bounding_Boxes"><path fill="none" d="M0,0h24v24H0V0z"/></g><g id="Rounded"><path d="M18,19H6c-0.55,0-1-0.45-1-1V6c0-0.55,0.45-1,1-1h12c0.55,0,1,0.45,1,1v12C19,18.55,18.55,19,18,19z M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3L19,3z"/></g></svg></div>'
-            +           '<div class="zw-button"><svg version="1.1" x="0px" y="0px" width="18px"height="18px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve"><g id="Bounding_Boxes"><path fill="none" d="M0,0h24v24H0V0z"/></g><g id="Rounded"><path d="M18.3,5.71L18.3,5.71c-0.39-0.39-1.02-0.39-1.41,0L12,10.59L7.11,5.7c-0.39-0.39-1.02-0.39-1.41,0l0,0c-0.39,0.39-0.39,1.02,0,1.41L10.59,12L5.7,16.89c-0.39,0.39-0.39,1.02,0,1.41h0c0.39,0.39,1.02,0.39,1.41,0L12,13.41l4.89,4.89c0.39,0.39,1.02,0.39,1.41,0l0,0c0.39-0.39,0.39-1.02,0-1.41L13.41,12l4.89-4.89C18.68,6.73,18.68,6.09,18.3,5.71z"/></g></svg></div>'
+            +           '<div class="zw-button zw-pin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"/></svg></div>'
+            +           '<div class="zw-button zw-max"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V192h416v234z"/></svg></div>'
+            +           '<div class="zw-button zw-restore" style="display:none;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 0H144c-26.5 0-48 21.5-48 48v48H48c-26.5 0-48 21.5-48 48v320c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48v-48h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-96 464H48V256h320v208zm96-96h-48V144c0-26.5-21.5-48-48-48H144V48h320v320z"/></svg></div>'
+            +           '<div class="zw-button zw-close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"/></svg></div>'
             +       '</div>'
             +   '</div>'
             +   '<div class="zw-body">' + _settings.body + '</div>'
@@ -231,6 +227,61 @@ $.fn.zWindow = function(option) {
             
             // Prevent browser mouse down/up bug
             e.preventDefault();
+        });
+        
+        _$zWindow.find(".zw-button").click(function(e) {
+            var __self = this;
+            var __$self = $(__self);
+            var __btnType  = __self.className.replace(/zw-button /gi,"");
+            
+            switch (__btnType) {
+                case "zw-pin" : {
+                    
+                    break;
+                }
+                case "zw-max" : {
+                    _storage = {
+                        "top" : _zWindowCompStyle.top
+                        ,"left" : _zWindowCompStyle.left
+                        ,"width" : _zWindowCompStyle.width
+                        ,"height" : _zWindowCompStyle.height
+                        ,"position" : _zWindowStyle.position
+                    };
+                    
+                    _zWindowStyle.top = "0px";
+                    _zWindowStyle.left = "0px";
+                        
+                    if (_settings.maximize === "body") {
+                        var __body = _zWindowObj.body;
+                        
+                        _zWindowStyle.position = "fixed";
+                        _zWindowStyle.width = __body.offsetWidth + "px";
+                        _zWindowStyle.height = __body.offsetHeight + "px";
+                    } else {
+                        _zWindowStyle.width = _selfCompStyle.width;
+                        _zWindowStyle.height = _selfCompStyle.height;
+                    }
+                    
+                    __self.style.display = "none";
+                    __$self.next()[0].style.display = "block";
+                    break;
+                }
+                case "zw-restore" : {
+                    _zWindowStyle.top = _storage.top;
+                    _zWindowStyle.left = _storage.left;
+                    _zWindowStyle.width = _storage.width;
+                    _zWindowStyle.height = _storage.height;
+                    _zWindowStyle.position = _storage.position;
+                    
+                    __self.style.display = "none";
+                    __$self.prev()[0].style.display = "block";
+                    break;
+                }
+                case "zw-close" : {
+                    _$zWindow.remove();   
+                    break;
+                }
+            }
         });
         
         if (typeof _zWindowObj.isBodyEventOn === "undefined" || _zWindowObj.isBodyEventOn === false) {
@@ -421,4 +472,4 @@ function getRootOffset(el) {
     } while (element);
     
     return { top, left };
-}  
+}    
