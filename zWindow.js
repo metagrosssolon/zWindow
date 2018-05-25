@@ -6,9 +6,9 @@ zsi.__zWindow = {
     ,"zWindow" : null
     ,"zWindowStyle" : null
     ,"zWindowCompStyle" : null
-    ,"self" : null
     ,"selfCompStyle" : null
     ,"settings" : {}
+    ,"dragLimit" : {}
 };
 
 $(document).ready(function() {
@@ -23,16 +23,17 @@ $(document).ready(function() {
         ,"height" : 500
         ,"resizeLimit" : 100
         ,"position" : "absolute"
-        ,"header" : "Header ni"
+        ,"header" : "<span>Header ni</span>"
         ,"body" : "<h1>Body ni HAHAHAHAHHAHAHAHA</h1>"
     });
     
-    $("#window1 .zw-body").zWindow({
+    $("#window1 .zw-body").eq(0).zWindow({
         "id" : "window2"
-        ,"width" : 100
-        ,"height" : 100
+        ,"width" : 300
+        ,"height" : 300
         ,"position" : "absolute"
-        ,"resizeLimit" : 100
+        ,"resizeLimit" : 300
+        ,"header" : "<span>Header sad ni</span>"
         /*,"onDragStart" : function(o) {
             console.log(this,o);
         }
@@ -51,6 +52,16 @@ $(document).ready(function() {
         ,"onResizeEnd" : function(o) {
             console.log(this,o);
         }*/
+    });
+    
+    $("#window1 .zw-body").eq(0).zWindow({
+        "id" : "window3"
+        ,"width" : 100
+        ,"height" : 100
+        ,"resizeLimit" : 100
+        ,"position" : "absolute"
+        ,"header" : "<span>Window 3</span>"
+        ,"body" : "<h1>Window 3</h1>"
     });
 });
 
@@ -127,65 +138,59 @@ $.fn.zWindow = function(option) {
         
         // DRAG SECTION
         _$zWindow.find(".zw-title").mousedown(function(e) {
-            var __target = e.target;
+            var __onMouseDownObj  = _zWindowObj.onMouseDownObj
+                ,__zWoffsetTop    = _zWindow.offsetTop
+                ,__zWoffsetLeft   = _zWindow.offsetLeft
+                ,__zWoffsetWidth  = _zWindow.offsetWidth
+                ,__zWoffsetHeight = _zWindow.offsetHeight
+            ;
             
             _zWindowObj.zWindow             = _zWindow;
             _zWindowObj.zWindowStyle        = _zWindowStyle;
             _zWindowObj.zWindowCompStyle    = _zWindowCompStyle;
-            _zWindowObj.self                = _self;
             _zWindowObj.selfCompStyle       = _selfCompStyle;
-            _zWindowObj.settings            = _settings;
             
-            if (__target.className === "zw-title" || __target.parentNode.className === "zw-title") {
-                var __onMouseDownObj  = _zWindowObj.onMouseDownObj
-                    ,__zWoffsetTop    = _zWindow.offsetTop
-                    ,__zWoffsetLeft   = _zWindow.offsetLeft
-                    ,__zWoffsetWidth  = _zWindow.offsetWidth
-                    ,__zWoffsetHeight = _zWindow.offsetHeight
-                ;
+            if (_zWindowCompStyle.position === "absolute") {
+                // zWindow is absolute
+                var __selfPosition = _selfCompStyle.position;
                 
-                _zWindowObj.drag    = true;
-                _zWindow.className += " active";
+                _zWindowObj.dragLimit = {
+                    "bottom" : _self.offsetHeight
+                    ,"right" : _self.offsetWidth
+                };
                 
-                if (_zWindowCompStyle.position === "absolute") {
-                    // zWindow is absolute
-                    var __selfPosition = _selfCompStyle.position;
-                    
-                    _zWindowObj.dragLimit = {
-                        "bottom" : _self.offsetHeight
-                        ,"right" : _self.offsetWidth
-                    };
-                    
-                    if (__selfPosition === "initial" || __selfPosition === "static") {
-                        __onMouseDownObj.subtrahend = { "y" : e.offsetY , "x" : e.offsetX };
-                    } else {
-                        var _rootOffset = getRootOffset(_self);
-                        
-                        __onMouseDownObj.subtrahend = { 
-                            "y" : e.pageY - __zWoffsetTop 
-                            , "x" : e.pageX - __zWoffsetLeft
-                        };
-                        __onMouseDownObj.selfOffset = {
-                            "top"   : _rootOffset.top + e.offsetY
-                            ,"left" : _rootOffset.left + e.offsetX
-                        };
-                        __onMouseDownObj.width = __zWoffsetWidth;
-                        __onMouseDownObj.height = __zWoffsetHeight;
-                    }
-                } else {
-                    // zWindow is fixed
+                if (__selfPosition === "initial" || __selfPosition === "static") {
                     __onMouseDownObj.subtrahend = { "y" : e.offsetY , "x" : e.offsetX };
+                } else {
+                    var _rootOffset = getRootOffset(_self);
+                    
+                    __onMouseDownObj.subtrahend = { 
+                        "y" : e.pageY - __zWoffsetTop 
+                        , "x" : e.pageX - __zWoffsetLeft
+                    };
+                    __onMouseDownObj.selfOffset = {
+                        "top"   : _rootOffset.top + e.offsetY
+                        ,"left" : _rootOffset.left + e.offsetX
+                    };
+                    __onMouseDownObj.width = __zWoffsetWidth;
+                    __onMouseDownObj.height = __zWoffsetHeight;
                 }
-                
-                if (typeof _zWindow.onDragStart === "function") {
-                    _zWindow.onDragStart({
-                        "top" : __zWoffsetTop
-                        ,"left" : __zWoffsetLeft
-                        ,"width" : __zWoffsetWidth
-                        ,"height" : __zWoffsetHeight
-                    });
-                }
+            } else {
+                // zWindow is fixed
+                __onMouseDownObj.subtrahend = { "y" : e.offsetY , "x" : e.offsetX };
             }
+            
+            if (typeof _zWindow.onDragStart === "function") {
+                _zWindow.onDragStart({
+                    "top" : __zWoffsetTop
+                    ,"left" : __zWoffsetLeft
+                    ,"width" : __zWoffsetWidth
+                    ,"height" : __zWoffsetHeight
+                });
+            }
+            
+            _zWindowObj.drag    = true;
+            _zWindow.className += " active";
             
             // Prevent browser mouse down/up bug
             e.preventDefault();
@@ -193,26 +198,24 @@ $.fn.zWindow = function(option) {
         
         // RESIZE SECTION
         _$zWindow.find(".resizer").mousedown(function(e) {
-            console.log(this);
-            var __target          = e.target
+            var __onMouseDownObj  = _zWindowObj.onMouseDownObj
                 ,__zWoffsetTop    = _zWindow.offsetTop
                 ,__zWoffsetLeft   = _zWindow.offsetLeft
                 ,__zWoffsetWidth  = _zWindow.offsetWidth
                 ,__zWoffsetHeight = _zWindow.offsetHeight
             ;
             
-            _zWindowObj.resize = true;
-            _zWindow.className += " active";
+            _zWindowObj.zWindow             = _zWindow;
+            _zWindowObj.zWindowStyle        = _zWindowStyle;
+            _zWindowObj.settings            = _settings;
             
-            _zWindowObj.onMouseDownObj = {
-                "resizer"   : __target.attributes.resize.value
-                ,"pageX"    : e.pageX
-                ,"pageY"    : e.pageY
-                ,"top"      : __zWoffsetTop
-                ,"left"     : __zWoffsetLeft
-                ,"width"    : __zWoffsetLeft
-                ,"height"   : __zWoffsetHeight
-            };
+            __onMouseDownObj.resizer  = e.target.attributes.resize.value;
+            __onMouseDownObj.pageX    = e.pageX;
+            __onMouseDownObj.pageY    = e.pageY;
+            __onMouseDownObj.top      = __zWoffsetTop;
+            __onMouseDownObj.left     = __zWoffsetLeft;
+            __onMouseDownObj.width    = __zWoffsetWidth;
+            __onMouseDownObj.height   = __zWoffsetHeight;
             
             if (typeof _zWindow.onResizeStart === "function") {
                 _zWindow.onResizeStart({
@@ -222,6 +225,9 @@ $.fn.zWindow = function(option) {
                     ,"height"   : __zWoffsetHeight
                 });
             }
+            
+            _zWindowObj.resize = true;
+            _zWindow.className += " active";
             
             // Prevent browser mouse down/up bug
             e.preventDefault();
@@ -415,4 +421,4 @@ function getRootOffset(el) {
     } while (element);
     
     return { top, left };
-}
+}  
