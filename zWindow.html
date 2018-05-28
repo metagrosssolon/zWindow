@@ -120,6 +120,59 @@
         cursor : move;
     }
     
+    /* Pin / Unpin */
+    .zWindow.pinned {
+        top : 0px !important;
+        width : 100px !important;
+        height: 20px !important;
+    }
+    
+    .zWindow.pinned > .zw-content > .zw-header .zw-title {
+        width : 80px;
+    }
+    
+    .zWindow.pinned > .zw-content > .zw-header .zw-toolbar {
+        width : 20px;
+    }
+    
+    .zWindow.pinned > .zw-content > .zw-header .zw-button:not(.zw-unpin)
+    ,.zWindow .zw-unpin {
+        display: none;
+    }
+    
+    .zWindow.pinned .zw-unpin {
+        display: block;
+    }
+    
+    /* Max/Restore */
+    .zWindow.maxed {
+        top : 0px !important;
+        left : 0px !important;
+        width : 100% !important;
+        height : 100% !important;
+    }
+    
+    .zWindow.maxed > .zw-content > .zw-header .zw-title {
+        width: -webkit-calc(100% - 40px);
+        width: expression(100% - 40px);
+        width: -moz-calc(100% - 40px);
+        width: -o-calc(100% - 40px);
+        width: calc(100% - 40px);
+    }
+    
+    .zWindow.maxed > .zw-content > .zw-header .zw-toolbar {
+        width : 40px;
+    }
+    
+    .zWindow.maxed > .zw-content > .zw-header .zw-button:not(.zw-restore):not(.zw-close)
+    ,.zWindow .zw-restore {
+        display: none;
+    }
+    
+    .zWindow.maxed .zw-restore {
+        display: block;
+    }
+    
     /* --------------------------------------- Utilities --------------------------------------- */
     .zWindow .top {
         top : 0;

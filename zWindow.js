@@ -20,22 +20,12 @@ $(document).ready(function() {
     
     $(".zPanel").zWindow({
         "id" : "window1"
-        ,"width" : 500
-        ,"height" : 500
+        ,"width" : 250
+        ,"height" : 250
         ,"resizeLimit" : 100
         ,"position" : "absolute"
         ,"header" : "<span>Header ni</span>"
-        ,"body" : "<h1>Body ni HAHAHAHAHHAHAHAHA</h1>"
-    });
-    
-    $("#window1 .zw-body").zWindow({
-        "id" : "window2"
-        ,"width" : 300
-        ,"height" : 300
-        ,"position" : "absolute"
-        ,"resizeLimit" : 300
-        ,"header" : "<span>Header sad ni</span>"
-        ,"maximize" : "parent"
+        ,"body" : "<h1>Body ni</h1>"
         /*,"onDragStart" : function(o) {
             console.log(this,o);
         }
@@ -55,6 +45,36 @@ $(document).ready(function() {
             console.log(this,o);
         }*/
     });
+    
+    $("#window1 .zw-body").zWindow({
+        "id" : "window2"
+        ,"width" : 100
+        ,"height" : 100
+        ,"position" : "absolute"
+        ,"resizeLimit" : 100
+        ,"header" : "<span>Header sad ni</span>"
+        ,"maximizeTo" : "parent"
+    });
+    
+    $("#window1 .zw-body").zWindow({
+        "id" : "window3"
+        ,"width" : 100
+        ,"height" : 100
+        ,"position" : "absolute"
+        ,"resizeLimit" : 100
+        ,"header" : "<span>Header sad ni</span>"
+        ,"maximizeTo" : "parent"
+    });
+    
+    $("#window1 .zw-body").zWindow({
+        "id" : "window4"
+        ,"width" : 100
+        ,"height" : 100
+        ,"position" : "absolute"
+        ,"resizeLimit" : 100
+        ,"header" : "<span>Header sad ni</span>"
+        ,"maximizeTo" : "parent"
+    });
 });
 
 $.fn.zWindow = function(option) {
@@ -67,7 +87,8 @@ $.fn.zWindow = function(option) {
 			,"resizeLimit" : 200
 			,"header" : ""
 			,"body" : ""
-			,"maximize" : "body" // "window" || "parent"
+			,"maximizeTo" : "body" // "body" || "parent"
+			,"pinTo" : "body" // "body" || "parent"
 		};
 		
 		// Merge the default options and user options
@@ -84,6 +105,7 @@ $.fn.zWindow = function(option) {
             ,_zWindowCompStyle
             
             ,_storage           = {}
+            ,_isFreeze          = false
         ;
         
         _$self.append(
@@ -93,8 +115,9 @@ $.fn.zWindow = function(option) {
             +       '<div class="zw-title">' + _settings.header + '</div>'
             +       '<div class="zw-toolbar">'
             +           '<div class="zw-button zw-pin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"/></svg></div>'
+            +           '<div class="zw-button zw-unpin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448.1 512"><path d="M448.1 344v112c0 13.3-10.7 24-24 24h-112c-21.4 0-32.1-25.9-17-41l36.2-36.2L224 295.6 116.8 402.9 153 439c15.1 15.1 4.4 41-17 41H24c-13.3 0-24-10.7-24-24V344c0-21.4 25.9-32.1 41-17l36.2 36.2L184.5 256 77.2 148.7 41 185c-15.1 15.1-41 4.4-41-17V56c0-13.3 10.7-24 24-24h112c21.4 0 32.1 25.9 17 41l-36.2 36.2L224 216.4l107.3-107.3L295.1 73c-15.1-15.1-4.4-41 17-41h112c13.3 0 24 10.7 24 24v112c0 21.4-25.9 32.1-41 17l-36.2-36.2L263.6 256l107.3 107.3 36.2-36.2c15.1-15.2 41-4.5 41 16.9z"/></svg></div>'
             +           '<div class="zw-button zw-max"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V192h416v234z"/></svg></div>'
-            +           '<div class="zw-button zw-restore" style="display:none;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 0H144c-26.5 0-48 21.5-48 48v48H48c-26.5 0-48 21.5-48 48v320c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48v-48h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-96 464H48V256h320v208zm96-96h-48V144c0-26.5-21.5-48-48-48H144V48h320v320z"/></svg></div>'
+            +           '<div class="zw-button zw-restore"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 0H144c-26.5 0-48 21.5-48 48v48H48c-26.5 0-48 21.5-48 48v320c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48v-48h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-96 464H48V256h320v208zm96-96h-48V144c0-26.5-21.5-48-48-48H144V48h320v320z"/></svg></div>'
             +           '<div class="zw-button zw-close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"/></svg></div>'
             +       '</div>'
             +   '</div>'
@@ -134,6 +157,8 @@ $.fn.zWindow = function(option) {
         
         // DRAG SECTION
         _$zWindow.find(".zw-title").mousedown(function(e) {
+            if (_isFreeze) return false;
+            
             var __onMouseDownObj  = _zWindowObj.onMouseDownObj
                 ,__zWoffsetTop    = _zWindow.offsetTop
                 ,__zWoffsetLeft   = _zWindow.offsetLeft
@@ -194,6 +219,8 @@ $.fn.zWindow = function(option) {
         
         // RESIZE SECTION
         _$zWindow.find(".resizer").mousedown(function(e) {
+            if (_isFreeze) return false;
+            
             var __onMouseDownObj  = _zWindowObj.onMouseDownObj
                 ,__zWoffsetTop    = _zWindow.offsetTop
                 ,__zWoffsetLeft   = _zWindow.offsetLeft
@@ -229,58 +256,76 @@ $.fn.zWindow = function(option) {
             e.preventDefault();
         });
         
+        // TOOLBAR SECTION
         _$zWindow.find(".zw-button").click(function(e) {
             var __self = this;
-            var __$self = $(__self);
             var __btnType  = __self.className.replace(/zw-button /gi,"");
             
             switch (__btnType) {
                 case "zw-pin" : {
+                    var __pinnedZW = _self.pinnedZwindow;
+                    if (typeof __pinnedZW === "undefined") __pinnedZW = 0;
                     
+                    store("pinned");
+                    
+                    _zWindowStyle.left = (__pinnedZW * 100) + "px";
+                    _self.pinnedZwindow = __pinnedZW + 1;
+                    break;
+                }
+                case "zw-unpin" : {
+                    restore("pinned");
+                    
+                    _self.pinnedZwindow = _self.pinnedZwindow - 1;
+                    
+                    var __$pinnedZwindows = _$self.children(".zWindow.pinned");
+                    for (var __i = 0, __l = __$pinnedZwindows.length; __i < __l; __i++) {
+                        __$pinnedZwindows[__i].style.left = (__i * 100) + "px";
+                    }
                     break;
                 }
                 case "zw-max" : {
-                    _storage = {
-                        "top" : _zWindowCompStyle.top
-                        ,"left" : _zWindowCompStyle.left
-                        ,"width" : _zWindowCompStyle.width
-                        ,"height" : _zWindowCompStyle.height
-                        ,"position" : _zWindowStyle.position
-                    };
-                    
-                    _zWindowStyle.top = "0px";
-                    _zWindowStyle.left = "0px";
-                        
-                    if (_settings.maximize === "body") {
+                    store("maxed");
+                    if (_settings.maximizeTo === "body") {
                         var __body = _zWindowObj.body;
-                        
                         _zWindowStyle.position = "fixed";
-                        _zWindowStyle.width = __body.offsetWidth + "px";
-                        _zWindowStyle.height = __body.offsetHeight + "px";
-                    } else {
-                        _zWindowStyle.width = _selfCompStyle.width;
-                        _zWindowStyle.height = _selfCompStyle.height;
                     }
-                    
-                    __self.style.display = "none";
-                    __$self.next()[0].style.display = "block";
                     break;
                 }
                 case "zw-restore" : {
-                    _zWindowStyle.top = _storage.top;
-                    _zWindowStyle.left = _storage.left;
-                    _zWindowStyle.width = _storage.width;
-                    _zWindowStyle.height = _storage.height;
-                    _zWindowStyle.position = _storage.position;
-                    
-                    __self.style.display = "none";
-                    __$self.prev()[0].style.display = "block";
+                    restore("maxed");
                     break;
                 }
                 case "zw-close" : {
                     _$zWindow.remove();   
                     break;
                 }
+                
+                _zWindowObj.drag = false;
+                _zWindowObj.resize = false;
+            }
+            
+            function store(type) {
+                _storage = {
+                    "top" : _zWindowCompStyle.top
+                    ,"left" : _zWindowCompStyle.left
+                    ,"width" : _zWindowCompStyle.width
+                    ,"height" : _zWindowCompStyle.height
+                    ,"position" : _zWindowStyle.position
+                };
+                
+                _isFreeze = true;
+                _$zWindow.addClass(type);
+            }
+            
+            function restore(type) {
+                _zWindowStyle.top = _storage.top;
+                _zWindowStyle.left = _storage.left;
+                _zWindowStyle.width = _storage.width;
+                _zWindowStyle.height = _storage.height;
+                _zWindowStyle.position = _storage.position;
+                
+                _isFreeze = false;
+                _$zWindow.removeClass(type);
             }
         });
         
@@ -318,13 +363,14 @@ $.fn.zWindow = function(option) {
                                 ,__newX         = 0
                             ;
                             
-                            if (__currentY < 0) { __newY = 0; } 
-                            else if (__currentY + __zWHeight > __dlBottom) { __newY = (__dlBottom - __zWHeight); }
+                            if (__currentY + __zWHeight > __dlBottom) { __newY = (__dlBottom - __zWHeight); }
                             else { __newY = __pageY - __subtrahend.y; }
                             
-                            if (__currentX < 0) { __newX = 0; } 
-                            else if (__currentX + __zWWidth > __dlRight) { __newX = (__dlRight - __zWWidth); }
+                            if (__currentX + __zWWidth > __dlRight) { __newX = (__dlRight - __zWWidth); }
                             else { __newX = __pageX - __subtrahend.x; }
+                            
+                            if (__currentY < 0 || __newY < 0) { __newY = 0; }
+                            if (__currentX < 0 || __newX < 0) { __newX = 0; }
                             
                             __zWStyle.top = __newY + "px";
                             __zWStyle.left = __newX + "px";
@@ -472,4 +518,4 @@ function getRootOffset(el) {
     } while (element);
     
     return { top, left };
-}    
+}      
