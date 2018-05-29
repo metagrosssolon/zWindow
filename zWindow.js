@@ -24,8 +24,7 @@ $(document).ready(function() {
         ,"height" : 250
         ,"resizeLimit" : 100
         ,"position" : "absolute"
-        ,"header" : "<span>Header ni</span>"
-        ,"body" : "<h1>Body ni</h1>"
+        ,"header" : "<span>window1</span>"
         /*,"onDragStart" : function(o) {
             console.log(this,o);
         }
@@ -52,18 +51,18 @@ $(document).ready(function() {
         ,"height" : 100
         ,"position" : "absolute"
         ,"resizeLimit" : 100
-        ,"header" : "<span>Header sad ni</span>"
-        ,"maximizeTo" : "parent"
+        ,"header" : "<span>window2</span>"
     });
-    
+    /*
     $("#window1 .zw-body").zWindow({
         "id" : "window3"
         ,"width" : 100
         ,"height" : 100
         ,"position" : "absolute"
         ,"resizeLimit" : 100
-        ,"header" : "<span>Header sad ni</span>"
-        ,"maximizeTo" : "parent"
+        ,"header" : "<span>window3</span>"
+        ,"maximizeTo" : "body"
+		,"pinTo" : "body"
     });
     
     $("#window1 .zw-body").zWindow({
@@ -72,9 +71,10 @@ $(document).ready(function() {
         ,"height" : 100
         ,"position" : "absolute"
         ,"resizeLimit" : 100
-        ,"header" : "<span>Header sad ni</span>"
-        ,"maximizeTo" : "parent"
-    });
+        ,"header" : "<span>window4</span>"
+        ,"maximizeTo" : "body"
+		,"pinTo" : "body"
+    });*/
 });
 
 $.fn.zWindow = function(option) {
@@ -87,8 +87,8 @@ $.fn.zWindow = function(option) {
 			,"resizeLimit" : 200
 			,"header" : ""
 			,"body" : ""
-			,"maximizeTo" : "body" // "body" || "parent"
-			,"pinTo" : "body" // "body" || "parent"
+			,"maximizeTo" : "parent" // "body" || "parent"
+			,"pinTo" : "parent" // "body" || "parent"
 		};
 		
 		// Merge the default options and user options
@@ -258,29 +258,40 @@ $.fn.zWindow = function(option) {
         
         // TOOLBAR SECTION
         _$zWindow.find(".zw-button").click(function(e) {
-            var __self = this;
-            var __btnType  = __self.className.replace(/zw-button /gi,"");
-            
-            switch (__btnType) {
+            switch (this.className.replace(/zw-button /gi,"")) {
                 case "zw-pin" : {
-                    var __pinnedZW = _self.pinnedZwindow;
-                    if (typeof __pinnedZW === "undefined") __pinnedZW = 0;
+                    var __pinTarget = (_settings.pinTo === "body" ? _zWindowObj.body : _self )
+                        ,__pinnedZw = __pinTarget.pinnedZW
+                    ;
                     
                     store("pinned");
                     
-                    _zWindowStyle.left = (__pinnedZW * 100) + "px";
-                    _self.pinnedZwindow = __pinnedZW + 1;
+                    if (_settings.pinTo === "body") _zWindowStyle.position = "fixed";
+                    
+                    __pinnedZw = (typeof __pinnedZw === "undefined" ? [] : __pinnedZw );
+                    __pinnedZw.push(_settings.id);
+                    
+                    _zWindowStyle.left   = ((__pinnedZw.length - 1) * 100) + "px";
+                    __pinTarget.pinnedZW = __pinnedZw;
                     break;
                 }
                 case "zw-unpin" : {
-                    restore("pinned");
+                    var __pinTarget     = (_settings.pinTo === "body" ? _zWindowObj.body : _self )
+                        ,__pinnedZw     = __pinTarget.pinnedZW
+                        ,__newPinnedZw  = []
+                    ;
                     
-                    _self.pinnedZwindow = _self.pinnedZwindow - 1;
-                    
-                    var __$pinnedZwindows = _$self.children(".zWindow.pinned");
-                    for (var __i = 0, __l = __$pinnedZwindows.length; __i < __l; __i++) {
-                        __$pinnedZwindows[__i].style.left = (__i * 100) + "px";
+                    for (var __i = 0, __l = __pinnedZw.length; __i < __l; __i++) {
+                        var __info = __pinnedZw[__i];
+                        if (__info !== _settings.id) __newPinnedZw.push(__info);
                     }
+                    
+                    for (var __i = 0, __l = __newPinnedZw.length; __i < __l; __i++) {
+                        document.getElementById(__newPinnedZw[__i]).style.left = (__i * 100) + "px";
+                    }
+                    
+                    restore("pinned");
+                    __pinTarget.pinnedZW = __newPinnedZw;
                     break;
                 }
                 case "zw-max" : {
@@ -299,10 +310,10 @@ $.fn.zWindow = function(option) {
                     _$zWindow.remove();   
                     break;
                 }
-                
-                _zWindowObj.drag = false;
-                _zWindowObj.resize = false;
             }
+            
+            _zWindowObj.drag = false;
+            _zWindowObj.resize = false;
             
             function store(type) {
                 _storage = {
@@ -518,4 +529,4 @@ function getRootOffset(el) {
     } while (element);
     
     return { top, left };
-}      
+}
