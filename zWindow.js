@@ -20,7 +20,7 @@ $(document).ready(function() {
     
     $(".zPanel").zWindow({
         "id" : "window1"
-        ,"width" : 250
+        ,"width" : 500
         ,"height" : 250
         ,"resizeLimit" : 100
         ,"position" : "absolute"
@@ -52,17 +52,19 @@ $(document).ready(function() {
         ,"position" : "absolute"
         ,"resizeLimit" : 100
         ,"header" : "<span>window2</span>"
+        //,"maximizeTo" : "body"
+        //,"pinTo" : "body"
     });
-    /*
+    
     $("#window1 .zw-body").zWindow({
         "id" : "window3"
         ,"width" : 100
         ,"height" : 100
-        ,"position" : "absolute"
+        ,"position" : "fixed"
         ,"resizeLimit" : 100
         ,"header" : "<span>window3</span>"
-        ,"maximizeTo" : "body"
-		,"pinTo" : "body"
+        //,"maximizeTo" : "body"
+        //,"pinTo" : "body"
     });
     
     $("#window1 .zw-body").zWindow({
@@ -72,9 +74,7 @@ $(document).ready(function() {
         ,"position" : "absolute"
         ,"resizeLimit" : 100
         ,"header" : "<span>window4</span>"
-        ,"maximizeTo" : "body"
-		,"pinTo" : "body"
-    });*/
+    });
 });
 
 $.fn.zWindow = function(option) {
@@ -105,7 +105,8 @@ $.fn.zWindow = function(option) {
             ,_zWindowCompStyle
             
             ,_storage           = {}
-            ,_isFreeze          = false
+            ,_noDrag            = false
+            ,_noResize          = false
         ;
         
         _$self.append(
@@ -157,7 +158,7 @@ $.fn.zWindow = function(option) {
         
         // DRAG SECTION
         _$zWindow.find(".zw-title").mousedown(function(e) {
-            if (_isFreeze) return false;
+            if (_noDrag) return false;
             
             var __onMouseDownObj  = _zWindowObj.onMouseDownObj
                 ,__zWoffsetTop    = _zWindow.offsetTop
@@ -219,7 +220,7 @@ $.fn.zWindow = function(option) {
         
         // RESIZE SECTION
         _$zWindow.find(".resizer").mousedown(function(e) {
-            if (_isFreeze) return false;
+            if (_noResize) return false;
             
             var __onMouseDownObj  = _zWindowObj.onMouseDownObj
                 ,__zWoffsetTop    = _zWindow.offsetTop
@@ -266,12 +267,14 @@ $.fn.zWindow = function(option) {
                     
                     store("pinned");
                     
-                    if (_settings.pinTo === "body") _zWindowStyle.position = "fixed";
+                    _zWindowStyle.position = (_settings.pinTo === "body" ? "fixed" : "absolute" );
                     
                     __pinnedZw = (typeof __pinnedZw === "undefined" ? [] : __pinnedZw );
                     __pinnedZw.push(_settings.id);
                     
-                    _zWindowStyle.left   = ((__pinnedZw.length - 1) * 100) + "px";
+                    for (var __i = 0, __l = __pinnedZw.length; __i < __l; __i++) {
+                        document.getElementById(__pinnedZw[__i]).style.left = (__i * 100) + "px";
+                    }
                     __pinTarget.pinnedZW = __pinnedZw;
                     break;
                 }
@@ -296,10 +299,7 @@ $.fn.zWindow = function(option) {
                 }
                 case "zw-max" : {
                     store("maxed");
-                    if (_settings.maximizeTo === "body") {
-                        var __body = _zWindowObj.body;
-                        _zWindowStyle.position = "fixed";
-                    }
+                    _zWindowStyle.position = (_settings.maximizeTo === "body" ? "fixed" : "absolute" );
                     break;
                 }
                 case "zw-restore" : {
@@ -324,7 +324,9 @@ $.fn.zWindow = function(option) {
                     ,"position" : _zWindowStyle.position
                 };
                 
-                _isFreeze = true;
+                if (type !== "pinned") _noDrag = true;
+                _noResize = true;
+                
                 _$zWindow.addClass(type);
             }
             
@@ -335,7 +337,8 @@ $.fn.zWindow = function(option) {
                 _zWindowStyle.height = _storage.height;
                 _zWindowStyle.position = _storage.position;
                 
-                _isFreeze = false;
+                _noDrag = false;
+                _noResize = false;
                 _$zWindow.removeClass(type);
             }
         });
