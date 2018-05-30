@@ -27,23 +27,23 @@ $(document).ready(function() {
         ,"resizeLimit" : 100
         ,"position" : "absolute"
         ,"header" : "<span>window1</span>"
-        ,"onDragStart" : function(o) {
-            console.log(this,o);
+        ,"onDragStart" : function() {
+            console.log(this);
         }
-        ,"onResizeStart" : function(o) {
-            console.log(this,o);
+        ,"onResizeStart" : function() {
+            console.log(this);
         }
-        ,"onDrag" : function(o) {
-            console.log(this,o);
+        ,"onDrag" : function() {
+            console.log(this);
         }
-        ,"onResize" : function(o) {
-            console.log(this,o);
+        ,"onResize" : function() {
+            console.log(this);
         }
-        ,"onDragEnd" : function(o) {
-            console.log(this,o);
+        ,"onDragEnd" : function() {
+            console.log(this);
         }
-        ,"onResizeEnd" : function(o) {
-            console.log(this,o);
+        ,"onResizeEnd" : function() {
+            console.log(this);
         }
     });
     
@@ -162,12 +162,7 @@ $.fn.zWindow = function(option) {
         _$zWindow.find(".zw-title").mousedown(function(e) {
             if (_noDrag) return false;
             
-            var __onMouseDownObj  = _zWindowObj.onMouseDownObj
-                ,__zWoffsetTop    = _zWindow.offsetTop
-                ,__zWoffsetLeft   = _zWindow.offsetLeft
-                ,__zWoffsetWidth  = _zWindow.offsetWidth
-                ,__zWoffsetHeight = _zWindow.offsetHeight
-            ;
+            var __onMouseDownObj  = _zWindowObj.onMouseDownObj;
             
             _zWindowObj.zWindow             = _zWindow;
             _zWindowObj.zWindowStyle        = _zWindowStyle;
@@ -189,15 +184,15 @@ $.fn.zWindow = function(option) {
                     var _rootOffset = getRootOffset(_self);
                     
                     __onMouseDownObj.subtrahend = { 
-                        "y" : e.pageY - __zWoffsetTop 
-                        , "x" : e.pageX - __zWoffsetLeft
+                        "y" : e.pageY - _zWindow.offsetTop 
+                        , "x" : e.pageX - _zWindow.offsetLeft
                     };
                     __onMouseDownObj.selfOffset = {
                         "top"   : _rootOffset.top + e.offsetY
                         ,"left" : _rootOffset.left + e.offsetX
                     };
-                    __onMouseDownObj.width = __zWoffsetWidth;
-                    __onMouseDownObj.height = __zWoffsetHeight;
+                    __onMouseDownObj.width = _zWindow.offsetWidth;
+                    __onMouseDownObj.height = _zWindow.offsetHeight;
                 }
             } else {
                 // zWindow is fixed
@@ -212,13 +207,8 @@ $.fn.zWindow = function(option) {
             _zWindowObj.drag    = true;
             _zWindow.className += " active";
             
-            if (typeof _zWindow.onDragStart === "function" && ! __zWindowObj.pinDrag) {
-                _zWindow.onDragStart({
-                    "top" : __zWoffsetTop
-                    ,"left" : __zWoffsetLeft
-                    ,"width" : __zWoffsetWidth
-                    ,"height" : __zWoffsetHeight
-                });
+            if (typeof _zWindow.onDragStart === "function" && ! _zWindowObj.pinDrag) {
+                _zWindow.onDragStart();
             }
             
             // Prevent browser mouse down/up bug
@@ -229,12 +219,7 @@ $.fn.zWindow = function(option) {
         _$zWindow.find(".resizer").mousedown(function(e) {
             if (_noResize) return false;
             
-            var __onMouseDownObj  = _zWindowObj.onMouseDownObj
-                ,__zWoffsetTop    = _zWindow.offsetTop
-                ,__zWoffsetLeft   = _zWindow.offsetLeft
-                ,__zWoffsetWidth  = _zWindow.offsetWidth
-                ,__zWoffsetHeight = _zWindow.offsetHeight
-            ;
+            var __onMouseDownObj  = _zWindowObj.onMouseDownObj;
             
             _zWindowObj.zWindow             = _zWindow;
             _zWindowObj.zWindowStyle        = _zWindowStyle;
@@ -243,21 +228,16 @@ $.fn.zWindow = function(option) {
             __onMouseDownObj.resizer  = e.target.attributes.resize.value;
             __onMouseDownObj.pageX    = e.pageX;
             __onMouseDownObj.pageY    = e.pageY;
-            __onMouseDownObj.top      = __zWoffsetTop;
-            __onMouseDownObj.left     = __zWoffsetLeft;
-            __onMouseDownObj.width    = __zWoffsetWidth;
-            __onMouseDownObj.height   = __zWoffsetHeight;
+            __onMouseDownObj.top      = _zWindow.offsetTop;
+            __onMouseDownObj.left     = _zWindow.offsetLeft;
+            __onMouseDownObj.width    = _zWindow.offsetWidth;
+            __onMouseDownObj.height   = _zWindow.offsetHeight;
             
             _zWindowObj.resize = true;
             _zWindow.className += " active";
             
             if (typeof _zWindow.onResizeStart === "function") {
-                _zWindow.onResizeStart({
-                    "top"       : __zWoffsetTop
-                    ,"left"     : __zWoffsetLeft
-                    ,"width"    : __zWoffsetWidth
-                    ,"height"   : __zWoffsetHeight
-                });
+                _zWindow.onResizeStart();
             }
             
             // Prevent browser mouse down/up bug
@@ -403,12 +383,7 @@ $.fn.zWindow = function(option) {
                     }
                     
                     if (typeof __zWindow.onDrag === "function" && ! __zWindowObj.pinDrag) {
-                        __zWindow.onDrag({
-                            "top"       : __zWindow.offsetTop
-                            ,"left"     : __zWindow.offsetLeft
-                            ,"width"    : __zWindow.offsetWidth
-                            ,"height"   : __zWindow.offsetHeight
-                        });
+                        __zWindow.onDrag();
                     }
                     
                     return false;
@@ -477,12 +452,7 @@ $.fn.zWindow = function(option) {
                     }
                     
                     if (typeof __zWindow.onResize === "function") {
-                        __zWindow.onResize({
-                            "top" : __zWindow.offsetTop
-                            ,"left" : __zWindow.offsetLeft
-                            ,"width" : __zWindow.offsetWidth
-                            ,"height" : __zWindow.offsetHeight
-                        });
+                        __zWindow.onResize();
                     }
                     
                     return false;
@@ -513,21 +483,11 @@ $.fn.zWindow = function(option) {
                         }
                     } else {
                         if (__drag && typeof __zWindow.onDragEnd === "function") {
-                            __zWindow.onDragEnd({
-                                "top"       : __zWindow.offsetTop
-                                ,"left"     : __zWindow.offsetLeft
-                                ,"width"    : __zWindow.offsetWidth
-                                ,"height"   : __zWindow.offsetHeight
-                            });
+                            __zWindow.onDragEnd();
                         }
                         
                         if (__resize && typeof __zWindow.onResizeEnd === "function") {
-                            __zWindow.onResizeEnd({
-                                "top"       : __zWindow.offsetTop
-                                ,"left"     : __zWindow.offsetLeft
-                                ,"width"    : __zWindow.offsetWidth
-                                ,"height"   : __zWindow.offsetHeight
-                            });
+                            __zWindow.onResizeEnd();
                         }
                     }
                     
@@ -557,4 +517,4 @@ function getRootOffset(el) {
     } while (element);
     
     return { top, left };
-}   
+}    
