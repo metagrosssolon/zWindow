@@ -27,7 +27,7 @@ $(document).ready(function() {
         ,"resizeLimit" : 100
         ,"position" : "absolute"
         ,"header" : "<span>window1</span>"
-        ,"onDragStart" : function() {
+        /*,"onDragStart" : function() {
             console.log(this);
         }
         ,"onResizeStart" : function() {
@@ -44,7 +44,7 @@ $(document).ready(function() {
         }
         ,"onResizeEnd" : function() {
             console.log(this);
-        }
+        }*/
     });
     
     $("#window1 .zw-body").zWindow({
@@ -117,11 +117,11 @@ $.fn.zWindow = function(option) {
             +   '<div class="zw-header">'
             +       '<div class="zw-title">' + _settings.header + '</div>'
             +       '<div class="zw-toolbar">'
-            +           '<div class="zw-button zw-pin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"/></svg></div>'
-            +           '<div class="zw-button zw-unpin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448.1 512"><path d="M448.1 344v112c0 13.3-10.7 24-24 24h-112c-21.4 0-32.1-25.9-17-41l36.2-36.2L224 295.6 116.8 402.9 153 439c15.1 15.1 4.4 41-17 41H24c-13.3 0-24-10.7-24-24V344c0-21.4 25.9-32.1 41-17l36.2 36.2L184.5 256 77.2 148.7 41 185c-15.1 15.1-41 4.4-41-17V56c0-13.3 10.7-24 24-24h112c21.4 0 32.1 25.9 17 41l-36.2 36.2L224 216.4l107.3-107.3L295.1 73c-15.1-15.1-4.4-41 17-41h112c13.3 0 24 10.7 24 24v112c0 21.4-25.9 32.1-41 17l-36.2-36.2L263.6 256l107.3 107.3 36.2-36.2c15.1-15.2 41-4.5 41 16.9z"/></svg></div>'
-            +           '<div class="zw-button zw-max"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V192h416v234z"/></svg></div>'
-            +           '<div class="zw-button zw-restore"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 0H144c-26.5 0-48 21.5-48 48v48H48c-26.5 0-48 21.5-48 48v320c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48v-48h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-96 464H48V256h320v208zm96-96h-48V144c0-26.5-21.5-48-48-48H144V48h320v320z"/></svg></div>'
-            +           '<div class="zw-button zw-close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"/></svg></div>'
+            +           '<div class="zw-button zw-pin"><svg viewBox="0 0 384 512"><path d="M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"/></svg></div>'
+            +           '<div class="zw-button zw-unpin"><svg viewBox="0 0 448.1 512"><path d="M448.1 344v112c0 13.3-10.7 24-24 24h-112c-21.4 0-32.1-25.9-17-41l36.2-36.2L224 295.6 116.8 402.9 153 439c15.1 15.1 4.4 41-17 41H24c-13.3 0-24-10.7-24-24V344c0-21.4 25.9-32.1 41-17l36.2 36.2L184.5 256 77.2 148.7 41 185c-15.1 15.1-41 4.4-41-17V56c0-13.3 10.7-24 24-24h112c21.4 0 32.1 25.9 17 41l-36.2 36.2L224 216.4l107.3-107.3L295.1 73c-15.1-15.1-4.4-41 17-41h112c13.3 0 24 10.7 24 24v112c0 21.4-25.9 32.1-41 17l-36.2-36.2L263.6 256l107.3 107.3 36.2-36.2c15.1-15.2 41-4.5 41 16.9z"/></svg></div>'
+            +           '<div class="zw-button zw-max"><svg viewBox="0 0 512 512"><path d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V192h416v234z"/></svg></div>'
+            +           '<div class="zw-button zw-restore"><svg viewBox="0 0 512 512"><path d="M464 0H144c-26.5 0-48 21.5-48 48v48H48c-26.5 0-48 21.5-48 48v320c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48v-48h48c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-96 464H48V256h320v208zm96-96h-48V144c0-26.5-21.5-48-48-48H144V48h320v320z"/></svg></div>'
+            +           '<div class="zw-button zw-close"><svg viewBox="0 0 352 512"><path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"/></svg></div>'
             +       '</div>'
             +   '</div>'
             +   '<div class="zw-body">' + _settings.body + '</div>'
@@ -162,7 +162,7 @@ $.fn.zWindow = function(option) {
         _$zWindow.find(".zw-title").mousedown(function(e) {
             if (_noDrag) return false;
             
-            var __onMouseDownObj  = _zWindowObj.onMouseDownObj;
+            var __onMouseDownObj = {};
             
             _zWindowObj.zWindow             = _zWindow;
             _zWindowObj.zWindowStyle        = _zWindowStyle;
@@ -199,6 +199,8 @@ $.fn.zWindow = function(option) {
                 __onMouseDownObj.subtrahend = { "y" : e.offsetY , "x" : e.offsetX };
             }
             
+            _zWindowObj.onMouseDownObj = __onMouseDownObj;
+            
             if (/pinned/i.test(_zWindow.className)) {
                 _zWindowObj.pinnedZW = (_settings.pinTo === "body" ? _zWindowObj.body.pinnedZW : _self.pinnedZW );
                 if (_zWindowObj.pinnedZW.length > 1) _zWindowObj.pinDrag = true;
@@ -213,17 +215,19 @@ $.fn.zWindow = function(option) {
             
             // Prevent browser mouse down/up bug
             e.preventDefault();
+            e.stopPropagation();
+            return false;
         });
         
         // RESIZE SECTION
         _$zWindow.find(".resizer").mousedown(function(e) {
             if (_noResize) return false;
             
-            var __onMouseDownObj  = _zWindowObj.onMouseDownObj;
+            var __onMouseDownObj = {};
             
-            _zWindowObj.zWindow             = _zWindow;
-            _zWindowObj.zWindowStyle        = _zWindowStyle;
-            _zWindowObj.settings            = _settings;
+            _zWindowObj.zWindow = _zWindow;
+            _zWindowObj.zWindowStyle = _zWindowStyle;
+            _zWindowObj.settings = _settings;
             
             __onMouseDownObj.resizer  = e.target.attributes.resize.value;
             __onMouseDownObj.pageX    = e.pageX;
@@ -232,6 +236,8 @@ $.fn.zWindow = function(option) {
             __onMouseDownObj.left     = _zWindow.offsetLeft;
             __onMouseDownObj.width    = _zWindow.offsetWidth;
             __onMouseDownObj.height   = _zWindow.offsetHeight;
+            
+            _zWindowObj.onMouseDownObj = __onMouseDownObj;
             
             _zWindowObj.resize = true;
             _zWindow.className += " active";
@@ -242,6 +248,8 @@ $.fn.zWindow = function(option) {
             
             // Prevent browser mouse down/up bug
             e.preventDefault();
+            e.stopPropagation();
+            return false;
         });
         
         // TOOLBAR SECTION
@@ -299,15 +307,12 @@ $.fn.zWindow = function(option) {
                 }
             }
             
-            _zWindowObj.drag = false;
-            _zWindowObj.resize = false;
-            
             function store(type) {
                 _storage = {
-                    "top" : _zWindowCompStyle.top
-                    ,"left" : _zWindowCompStyle.left
-                    ,"width" : _zWindowCompStyle.width
-                    ,"height" : _zWindowCompStyle.height
+                    "top" : _zWindowStyle.top
+                    ,"left" : _zWindowStyle.left
+                    ,"width" : _zWindowStyle.width
+                    ,"height" : _zWindowStyle.height
                     ,"position" : _zWindowStyle.position
                 };
                 
@@ -328,10 +333,16 @@ $.fn.zWindow = function(option) {
                 _noResize = false;
                 _$zWindow.removeClass(type);
             }
+            
+            _zWindowObj.drag = false;
+            _zWindowObj.resize = false;
+            
+            e.stopPropagation();
+            return false;
         });
         
         if (typeof _zWindowObj.isBodyEventOn === "undefined" || _zWindowObj.isBodyEventOn === false) {
-            $("body").mousemove(function(e) {
+            window.onmousemove = function(e) {
                 var __zWindowObj = zsi.__zWindow;
                 
                 if (__zWindowObj.drag) {
@@ -386,6 +397,7 @@ $.fn.zWindow = function(option) {
                         __zWindow.onDrag();
                     }
                     
+                    e.stopPropagation();
                     return false;
                 }
                 
@@ -455,9 +467,12 @@ $.fn.zWindow = function(option) {
                         __zWindow.onResize();
                     }
                     
+                    e.stopPropagation();
                     return false;
                 }
-            }).mouseup(function() {
+            };
+            
+            window.onmouseup = function(e) {
                 var __zWindowObj = zsi.__zWindow
                     ,__drag      = __zWindowObj.drag
                     ,__resize    = __zWindowObj.resize
@@ -494,9 +509,11 @@ $.fn.zWindow = function(option) {
                     __zWindowObj.drag   = false;
                     __zWindowObj.resize = false;
                     __zWindowObj.pinDrag = false;
+                    
+                    e.stopPropagation();
                     return false;
                 }
-            });
+            };
             
             _zWindowObj.isBodyEventOn = true;
         }
@@ -517,4 +534,4 @@ function getRootOffset(el) {
     } while (element);
     
     return { top, left };
-}    
+} 
