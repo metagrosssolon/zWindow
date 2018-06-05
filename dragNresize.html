@@ -1,71 +1,56 @@
-<style>
-    .zPanel {
-        position : relative;
-    }
+/* --------------------------------------- drag --------------------------------------- */
     
-    /* --------------------------------------- drag --------------------------------------- */
-    
-    *[zdrag=true] {
-        top: 0;
-        left: 0;
-        overflow : hidden;
-    }
-    
-    /* --------------------------------------- Resizers --------------------------------------- */
-    *[zresize=true] {
-        overflow: hidden;
-    }
-    
-    *[zresize=true] > .resizer {
-        position : absolute;
-    }
-    
-    *[zresize=true] > .resizer.resizer-w {
-        cursor : ew-resize;
-        height : 100%;
-        width : 2px;
-    }
-    
-    *[zresize=true] > .resizer.resizer-h {
-        cursor : ns-resize;
-        height : 2px;
-        width : 100%;
-    }
-    
-    *[zresize=true] > .resizer.resizer-wha {
-        cursor : nesw-resize;
-        height : 5px;
-        width : 5px;
-    }
-    
-    *[zresize=true] > .resizer.resizer-whb {
-        cursor : nwse-resize;
-        height : 5px;
-        width : 5px;
-    }
-    
-    *[zresize=true] > .resizer.top {
-        top : 0;
-    }
-    
-    *[zresize=true] > .resizer.bottom {
-        bottom : 0;
-    }
-    
-    *[zresize=true] > .resizer.left {
-        left : 0;
-    }
-    
-    *[zresize=true] > .resizer.right {
-        right : 0;
-    }
-</style>
+*[zdrag=true] {
+	top: 0;
+	left: 0;
+	overflow : hidden;
+}
 
-<div class="zPanel">
-    
-    <div id="resize1" class="" style="width:300px;height:300px;background-color:red;">
-        <div id="resize2" class="" style="width:100px;height:100px;background-color:orange;"></div>
-    </div>
-    <div id="resize3" class="" style="width:100px;height:100px;background-color:yellow;"></div>
-    
-</div>
+/* --------------------------------------- Resizers --------------------------------------- */
+*[zresize=true] {
+	overflow: hidden;
+}
+
+*[zresize=true] > .resizer {
+	position : absolute;
+}
+
+*[zresize=true] > .resizer.resizer-w {
+	cursor : ew-resize;
+	height : 100%;
+	width : 2px;
+}
+
+*[zresize=true] > .resizer.resizer-h {
+	cursor : ns-resize;
+	height : 2px;
+	width : 100%;
+}
+
+*[zresize=true] > .resizer.resizer-wha {
+	cursor : nesw-resize;
+	height : 5px;
+	width : 5px;
+}
+
+*[zresize=true] > .resizer.resizer-whb {
+	cursor : nwse-resize;
+	height : 5px;
+	width : 5px;
+}
+
+*[zresize=true] > .resizer.top {
+	top : 0;
+}
+
+*[zresize=true] > .resizer.bottom {
+	bottom : 0;
+}
+
+*[zresize=true] > .resizer.left {
+	left : 0;
+}
+
+*[zresize=true] > .resizer.right {
+	right : 0;
+}
