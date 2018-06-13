@@ -1,17 +1,14 @@
 $(document).ready(function() {
     $(".zPanel").css({
-        "width" : $(window).width()
-        ,"height" : $(window).height()
+        "width" : $(window).innerWidth() - 10
+        ,"height" : 700
     });
     
-    $("#zw-container1").css({
-        "width" : 800
-        ,"height" : 600
-    }).zWindow([{
+    $("#zw-container1").css({ "height" : 600 }).zWindow([{
         "id" : "window1"
         ,"header" : "header sample"
         ,"body" : "<h1>Sample Body</h1>"
-        ,"dragLimit" : true
+        ,"limitDrag" : true
     }]);
 });
 
@@ -109,7 +106,7 @@ $.fn.zDrag = function(option) {
     	var _default = [{
     		"position" : "absolute" // "absolute" || "fixed"
     		,"target" : this // "any children jquery node"
-    		,"dragLimit" : true
+    		,"limitDrag" : true
     	}];
     	
     	// Merge the default options and user options
@@ -143,7 +140,7 @@ $.fn.zDrag = function(option) {
                     , "x" : e.pageX - _self.offsetLeft
                 };
                 
-                if (_settings.dragLimit === true) {
+                if (_settings.limitDrag === true) {
                     _zDrag.dragLimit = {
                         "status" : true
                         ,"bottom" : _parent.offsetHeight
@@ -335,7 +332,7 @@ $.fn.zWindow = function(option) {
         // Default initialization
 		var _default    = [{
 		    "position" : "absolute" // "absolute" || "fixed"
-    		,"dragLimit" : true
+    		,"limitDrag" : true
 			,"resizeLimit" : 200
 			,"width" : 200
 			,"height" : 200
@@ -376,7 +373,7 @@ $.fn.zWindow = function(option) {
                         .zDrag([{
                             "position" : _settings.position
                             ,"target" : $("#" + _settings.id + " > .zw-header > .zw-title")
-                            ,"dragLimit" : _settings.dragLimit
+                            ,"limitDrag" : _settings.limitDrag
                         }])
                         .zResize([{
                             "position" : _settings.position
@@ -432,4 +429,4 @@ $.fn.zWindow = function(option) {
         
         return _$zWindow;
     }
-};
+};   
