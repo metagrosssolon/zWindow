@@ -1,0 +1,9 @@
+- Create a resize/drag limit on fixed and absolute position.
+
+DRAG
+fixed = client width and height.
+absolute = parent width and height.
+
+RESIZE
+fixed = client width and height.
+absolute = parent width and height.
