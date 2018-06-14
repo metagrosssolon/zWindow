@@ -130,29 +130,23 @@ $.fn.zDrag = function(option) {
             _noDrag = (_$self.attr("zdrag") === "true" ? false : true );
             if (_noDrag) return false;
             
-            _zDrag.self             = _self;
-            _zDrag.selfStyle        = _selfStyle;
+            _zDrag.self         = _self;
+            _zDrag.selfStyle    = _selfStyle;
             
-            if (_selfStyle.position === "absolute") {
-                // zWindow is absolute
-                _zDrag.subtrahend = {
-                    "y" : e.pageY - _self.offsetTop 
-                    , "x" : e.pageX - _self.offsetLeft
+            _zDrag.subtrahend = {
+                "y" : ( _selfStyle.position === "absolute" ? e.pageY - _self.offsetTop : e.offsetY )
+                , "x" : ( _selfStyle.position === "absolute" ? e.pageX - _self.offsetLeft : e.offsetX )
+            };
+            
+            if (_settings.limitDrag === true) {
+                _zDrag.dragLimit = {
+                    "status" : true
+                    ,"bottom" : ( _selfStyle.position === "absolute" ? _parent.offsetHeight : window.innerHeight )
+                    ,"right" : ( _selfStyle.position === "absolute" ? _parent.offsetWidth : window.innerWidth )
                 };
                 
-                if (_settings.limitDrag === true) {
-                    _zDrag.dragLimit = {
-                        "status" : true
-                        ,"bottom" : _parent.offsetHeight
-                        ,"right" : _parent.offsetWidth
-                    };
-                    
-                    _zDrag.height = _self.offsetHeight;
-                    _zDrag.width = _self.offsetWidth;
-                }
-            } else {
-                // zWindow is fixed
-                _zDrag.subtrahend = { "y" : e.offsetY , "x" : e.offsetX };
+                _zDrag.height = _self.offsetHeight;
+                _zDrag.width = _self.offsetWidth;
             }
             
             _zDrag.drag = true;
@@ -180,45 +174,41 @@ window.onmousemove = function(e) {
         var _self        = _objDrag.self
             ,_selfStyle  = _objDrag.selfStyle
             ,_subtrahend = _objDrag.subtrahend
+            ,_dragLimit  = _objDrag.dragLimit
+            ,_minuendY
+            ,_minuendX
         ;
         
         if (_selfStyle.position === "absolute") {
-            // self is absolute
-            var _pageY = e.pageY
-                ,_pageX = e.pageX
-                ,_dragLimit = _objDrag.dragLimit
+            _minuendY = e.pageY;
+            _minuendX = e.pageX;
+        } else {
+            _minuendY = e.clientY;
+            _minuendX = e.clientX;
+        }
+        
+        if (_dragLimit.status === true) {
+            var _dlBottom     = _dragLimit.bottom
+                ,_dlRight      = _dragLimit.right
+                ,_width        = _objDrag.width
+                ,_height       = _objDrag.height
+                ,_currentY     = _minuendY - _subtrahend.y
+                ,_currentX     = _minuendX - _subtrahend.x
+                ,_newY         = 0
+                ,_newX         = 0
             ;
             
-            if (_dragLimit.status === true) {
-                var _dlBottom     = _dragLimit.bottom
-                    ,_dlRight      = _dragLimit.right
-                    ,_width        = _objDrag.width
-                    ,_height       = _objDrag.height
-                    ,_currentY     = _pageY - _subtrahend.y
-                    ,_currentX     = _pageX - _subtrahend.x
-                    ,_newY         = 0
-                    ,_newX         = 0
-                ;
-                
-                if (_currentY + _height > _dlBottom) { _newY = _dlBottom - _height; }
-                else { _newY = _pageY - _subtrahend.y; }
-                
-                if (_currentX + _width > _dlRight) { _newX = _dlRight - _width; }
-                else { _newX = _pageX - _subtrahend.x; }
-                
-                if (_currentY < 0 || _newY < 0) { _newY = 0; }
-                if (_currentX < 0 || _newX < 0) { _newX = 0; }
-                
-                _selfStyle.top = _newY + "px";
-                _selfStyle.left = _newX + "px";
-            } else {
-                _selfStyle.top   = _pageY - _subtrahend.y + "px";
-                _selfStyle.left  = _pageX - _subtrahend.x + "px";
-            }
+            if (_dlBottom < _currentY + _height) { _newY = _dlBottom - _height; }
+            else { _newY = _currentY; }
+            
+            if (_dlRight < _currentX + _width) { _newX = _dlRight - _width; }
+            else { _newX = _currentX; }
+            
+            _selfStyle.top = ( _currentY > 0 || _newY > 0 ? _newY + "px" : "0px" );
+            _selfStyle.left = ( _currentX > 0 || _newX > 0 ? _newX + "px" : "0px" );
         } else {
-            // self is fixed
-            _selfStyle.top   = e.clientY - _subtrahend.y + "px";
-            _selfStyle.left  = e.clientX - _subtrahend.x + "px";
+            _selfStyle.top   = _minuendY - _subtrahend.y + "px";
+            _selfStyle.left  = _minuendX - _subtrahend.x + "px";
         }
         
         if (typeof _self.onDrag === "function") {
