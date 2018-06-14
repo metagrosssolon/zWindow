@@ -1,7 +1,8 @@
 $(document).ready(function() {
     $(".zPanel").css({
-        "width" : $(window).innerWidth() - 10
+        "width" : $(window).innerWidth() - 600
         ,"height" : 700
+        ,"left" : 300
     });
     
     $("#zw-container1").css({ "height" : 600 }).zWindow([{
@@ -9,6 +10,8 @@ $(document).ready(function() {
         ,"header" : "header sample"
         ,"body" : "<h1>Sample Body</h1>"
         ,"limitDrag" : true
+        ,"limitResize" : false
+        ,"position" : "absolute"
     }]);
 });
 
@@ -26,7 +29,7 @@ zsi.__zResize = {
     "resize"        : false
     ,"self"         : null
     ,"selfStyle"    : null
-    ,"resizeLimit"  : null
+    ,"resizeLimit"  : {}
 };
 
 $.fn.zResize = function(option) {
@@ -34,9 +37,11 @@ $.fn.zResize = function(option) {
         if (this[0].zResizeInit) return this;
         
         // Default initialization
-		var _default = {
-			"resizeLimit" : 100
-		};
+		var _default = [{
+		    "limitResize" : true
+			,"minWidth" : 100
+			,"minHeight" : 100
+		}];
 		
 		// Merge the default options and user options
 		var _settings   = $.extend( true , _default , option )[0];
@@ -45,7 +50,8 @@ $.fn.zResize = function(option) {
             ,_self      = _$self[0]
             ,_selfStyle = _self.style
             
-            ,_parentCompStyle = window.getComputedStyle(_$self.parent()[0])
+            ,_parent    = _$self.parent()[0]
+            ,_parentCompStyle = window.getComputedStyle(_parent)
             
             ,_noResize  = false
             ,_zResize   = zsi.__zResize
@@ -69,17 +75,31 @@ $.fn.zResize = function(option) {
             _noResize = (_$self.attr("zresize") === "true" ? false : true );
             if (_noResize) return false;
             
+            var _selfPos        = _selfStyle.position;
             _zResize.self        = _self;
             _zResize.selfStyle   = _selfStyle;
-            _zResize.resizeLimit = _settings.resizeLimit;
             
             _zResize.resizer     = e.target.attributes.resize.value;
             _zResize.pageX       = e.pageX;
             _zResize.pageY       = e.pageY;
-            _zResize.top         = _self.offsetTop - (_selfStyle.position === "relative" ? parseInt(_parentCompStyle["padding-top"].replace(/px/i,"")) : 0);
-            _zResize.left        = _self.offsetLeft - (_selfStyle.position === "relative" ? parseInt(_parentCompStyle["padding-left"].replace(/px/i,"")) : 0);
+            _zResize.top         = _self.offsetTop - (_selfPos === "relative" ? parseInt(_parentCompStyle["padding-top"].replace(/px/i,"")) : 0);
+            _zResize.left        = _self.offsetLeft - (_selfPos === "relative" ? parseInt(_parentCompStyle["padding-left"].replace(/px/i,"")) : 0);
             _zResize.width       = _self.offsetWidth;
             _zResize.height      = _self.offsetHeight;
+            
+            _zResize.resizeLimit = {
+                "status"        : (_settings.limitResize === true ? true : false)
+                ,"bottom"       : ( _selfPos === "fixed" ? window.innerHeight : _parent.offsetHeight )
+                ,"right"        : ( _selfPos === "fixed" ? window.innerWidth : _parent.offsetWidth )
+                ,"width"        : _settings.minWidth
+                ,"height"       : _settings.minHeight
+                ,"minLeft"      : ((_zResize.left + _zResize.width) - _settings.minWidth) + "px"
+                ,"maxLWidth"    : (_zResize.left + _zResize.width) + "px"
+                ,"maxRWidth"    : (_zResize.resizeLimit.right - _zResize.left) + "px"
+                ,"minTop"       : ((_zResize.top + _zResize.height) - _settings.minHeight) + "px"
+                ,"maxTHeight"   : (_zResize.top + _zResize.height) + "px"
+                ,"maxBHeight"   : (_zResize.resizeLimit.bottom - _zResize.top) + "px"
+            };
             
             _zResize.resize = true;
             _self.className += " active";
@@ -130,19 +150,20 @@ $.fn.zDrag = function(option) {
             _noDrag = (_$self.attr("zdrag") === "true" ? false : true );
             if (_noDrag) return false;
             
+            var _selfPos        = _selfStyle.position;
             _zDrag.self         = _self;
             _zDrag.selfStyle    = _selfStyle;
             
             _zDrag.subtrahend = {
-                "y" : ( _selfStyle.position === "absolute" ? e.pageY - _self.offsetTop : e.offsetY )
-                , "x" : ( _selfStyle.position === "absolute" ? e.pageX - _self.offsetLeft : e.offsetX )
+                "y" : ( _selfPos === "absolute" ? e.pageY - _self.offsetTop : e.offsetY )
+                , "x" : ( _selfPos === "absolute" ? e.pageX - _self.offsetLeft : e.offsetX )
             };
             
             if (_settings.limitDrag === true) {
                 _zDrag.dragLimit = {
                     "status" : true
-                    ,"bottom" : ( _selfStyle.position === "absolute" ? _parent.offsetHeight : window.innerHeight )
-                    ,"right" : ( _selfStyle.position === "absolute" ? _parent.offsetWidth : window.innerWidth )
+                    ,"bottom" : ( _selfPos === "fixed" ? window.innerHeight : _parent.offsetHeight )
+                    ,"right" : ( _selfPos === "fixed" ? window.innerWidth : _parent.offsetWidth )
                 };
                 
                 _zDrag.height = _self.offsetHeight;
@@ -222,6 +243,11 @@ window.onmousemove = function(e) {
         var _self           = _objResize.self
             ,_selfStyle     = _objResize.selfStyle
             ,_resizeLimit   = _objResize.resizeLimit
+            ,_rlWidth       = _resizeLimit.width
+            ,_rlHeight      = _resizeLimit.height
+            ,_rlRight       = _resizeLimit.right
+            ,_rlBottom      = _resizeLimit.bottom
+            ,_rlStatus      = _resizeLimit.status
             
             ,_resizer       = _objResize.resizer
             ,_lastPageX     = _objResize.pageX
@@ -245,38 +271,76 @@ window.onmousemove = function(e) {
         {
             _newWidth = (_pageX > _lastPageX ? _lastWidth + _pageXA : _lastWidth - _pageXB);
             
-            if (_newWidth > _resizeLimit) {
+            var _offsetX = _lastLeft - _pageXA
+                ,_evalA = _newWidth > _rlWidth
+                ,_evalB = (_rlStatus ? _offsetX > 0 : true)
+            ;
+            
+            if (_evalA && _evalB) {
                 _selfStyle.width = _newWidth + "px";
-                _selfStyle.left = (_lastLeft - _pageXA) + "px";
-            } else {
-                _selfStyle.width = _resizeLimit + "px";
-                _selfStyle.left = ((_lastLeft + _lastWidth) - _resizeLimit) + "px";
+                _selfStyle.left = _offsetX + "px";
+            } else if ( ( !_evalA ) && _evalB ) {
+                _selfStyle.width = _rlWidth + "px";
+                _selfStyle.left = _resizeLimit.minLeft;
+            } else if ( _evalA && ( !_evalB ) ) {
+                _selfStyle.width = _resizeLimit.maxLWidth;
+                _selfStyle.left = "0px";
             }
         }
         
         if (_resizer === "right" || _resizer === "bottom-right" || _resizer === "top-right")
         {
             _newWidth = (_pageX > _lastPageX ? _lastWidth + _pageXB : _lastWidth - _pageXA);
-            _selfStyle.width = (_newWidth > _resizeLimit ? _newWidth : _resizeLimit) + "px";
+            
+            var _evalA = _newWidth > _rlWidth
+                ,_evalB = (_rlStatus ? _rlRight > _newWidth + _lastLeft : true)
+            ;
+            
+            if (_evalA && _evalB) {
+                _selfStyle.width = _newWidth + "px";
+            } else if ( ( !_evalA ) && _evalB ) {
+                _selfStyle.width = _rlWidth + "px";
+            } else if ( _evalA && ( !_evalB ) ) {
+                _selfStyle.width = _resizeLimit.maxRWidth;
+            }
         }
         
         if (_resizer === "top" || _resizer === "top-left" || _resizer === "top-right")
         {
             _newHeight = (_pageY > _lastPageY ? _lastHeight + _pageYA : _lastHeight - _pageYB);
             
-            if (_newHeight > _resizeLimit) {
+            var _offsetY = _lastTop - _pageYA
+                ,_evalA = _newHeight > _rlHeight
+                ,_evalB = (_rlStatus ? _offsetY > 0 : true)
+            ;
+            
+            if (_evalA && _evalB) {
                 _selfStyle.height = _newHeight + "px";
-                _selfStyle.top = (_lastTop - _pageYA) + "px";
-            } else {
-                _selfStyle.height = _resizeLimit + "px";
-                _selfStyle.top = ((_lastTop + _lastHeight) - _resizeLimit) + "px";
+                _selfStyle.top = _offsetY + "px";
+            } else if ( ( !_evalA ) && _evalB ) {
+                _selfStyle.height = _rlHeight + "px";
+                _selfStyle.top = _resizeLimit.minTop;
+            } else if ( _evalA && ( !_evalB ) ) {
+                _selfStyle.height = _resizeLimit.maxTHeight;
+                _selfStyle.top = "0px";
             }
         }
         
         if (_resizer === "bottom" || _resizer === "bottom-left" || _resizer === "bottom-right")
         {
             _newHeight = (_pageY > _lastPageY ? _lastHeight + _pageYB : _lastHeight - _pageYA);
-            _selfStyle.height = (_newHeight > _resizeLimit ? _newHeight : _resizeLimit) + "px";
+            
+            var _evalA = _newHeight > _rlHeight
+                ,_evalB = (_rlStatus ? _rlBottom > _newHeight + _lastTop : true )
+            ;
+            
+            if (_evalA && _evalB) {
+                _selfStyle.height = _newHeight + "px";
+            } else if ( ( !_evalA ) && _evalB ) {
+                _selfStyle.height = _rlHeight + "px";
+            } else if ( _evalA && ( !_evalB ) ) {
+                _selfStyle.height = _resizeLimit.maxBHeight;
+            }
         }
         
         if (typeof _self.onResize === "function") {
@@ -323,7 +387,9 @@ $.fn.zWindow = function(option) {
 		var _default    = [{
 		    "position" : "absolute" // "absolute" || "fixed"
     		,"limitDrag" : true
-			,"resizeLimit" : 200
+    		,"limitResize" : true
+			,"minWidth" : 200
+			,"minHeight" : 100
 			,"width" : 200
 			,"height" : 200
 			,"header" : ""
@@ -367,7 +433,9 @@ $.fn.zWindow = function(option) {
                         }])
                         .zResize([{
                             "position" : _settings.position
-                            ,"resizeLimit" : _settings.resizeLimit
+                            ,"limitResize" : _settings.limitResize
+                            ,"minWidth" : _settings.minWidth
+                            ,"minHeight" : _settings.minHeight
                         }]);
         _zWindow = _$zWindow[0];
         _zWindowStyle = _zWindow.style;
@@ -419,4 +487,4 @@ $.fn.zWindow = function(option) {
         
         return _$zWindow;
     }
-};   
+};    
