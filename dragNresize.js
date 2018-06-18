@@ -9,8 +9,8 @@ $(document).ready(function() {
         "id" : "window1"
         ,"header" : "header sample"
         ,"body" : "<h1>Sample Body</h1>"
-        ,"limitDrag" : true
-        ,"limitResize" : false
+        ,"limitDrag" : false
+        ,"limitResize" : true
         ,"position" : "absolute"
     }]);
 });
@@ -89,17 +89,19 @@ $.fn.zResize = function(option) {
             
             _zResize.resizeLimit = {
                 "status"        : (_settings.limitResize === true ? true : false)
-                ,"bottom"       : ( _selfPos === "fixed" ? window.innerHeight : _parent.offsetHeight )
-                ,"right"        : ( _selfPos === "fixed" ? window.innerWidth : _parent.offsetWidth )
+                ,"bottom"       : ( _selfPos === "fixed" ? window.innerHeight : _parent.scrollHeight )
+                ,"right"        : ( _selfPos === "fixed" ? window.innerWidth : _parent.scrollWidth )
                 ,"width"        : _settings.minWidth
                 ,"height"       : _settings.minHeight
                 ,"minLeft"      : ((_zResize.left + _zResize.width) - _settings.minWidth) + "px"
                 ,"maxLWidth"    : (_zResize.left + _zResize.width) + "px"
-                ,"maxRWidth"    : (_zResize.resizeLimit.right - _zResize.left) + "px"
                 ,"minTop"       : ((_zResize.top + _zResize.height) - _settings.minHeight) + "px"
                 ,"maxTHeight"   : (_zResize.top + _zResize.height) + "px"
-                ,"maxBHeight"   : (_zResize.resizeLimit.bottom - _zResize.top) + "px"
             };
+            
+            // To prevent NaN
+            _zResize.resizeLimit.maxRWidth = (_zResize.resizeLimit.right - _zResize.left) + "px";
+            _zResize.resizeLimit.maxBHeight = (_zResize.resizeLimit.bottom - _zResize.top) + "px";
             
             _zResize.resize = true;
             _self.className += " active";
@@ -162,8 +164,8 @@ $.fn.zDrag = function(option) {
             if (_settings.limitDrag === true) {
                 _zDrag.dragLimit = {
                     "status" : true
-                    ,"bottom" : ( _selfPos === "fixed" ? window.innerHeight : _parent.offsetHeight )
-                    ,"right" : ( _selfPos === "fixed" ? window.innerWidth : _parent.offsetWidth )
+                    ,"bottom" : ( _selfPos === "fixed" ? window.innerHeight : _parent.scrollHeight )
+                    ,"right" : ( _selfPos === "fixed" ? window.innerWidth : _parent.scrollWidth )
                 };
                 
                 _zDrag.height = _self.offsetHeight;
@@ -487,4 +489,4 @@ $.fn.zWindow = function(option) {
         
         return _$zWindow;
     }
-};    
+};     
