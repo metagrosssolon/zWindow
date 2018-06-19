@@ -1,16 +1,16 @@
 $(document).ready(function() {
     $(".zPanel").css({
-        "width" : $(window).innerWidth() - 600
+        "width" : $(window).innerWidth() - 300
         ,"height" : 700
-        ,"left" : 300
+        ,"left" : 100
     });
     
-    $("#zw-container1").css({ "height" : 600 }).zWindow([{
+    $("#zw-container1").css({ "width" : 750 , "height" : 600 }).zWindow([{
         "id" : "window1"
         ,"header" : "header sample"
         ,"body" : "<h1>Sample Body</h1>"
         ,"limitDrag" : false
-        ,"limitResize" : true
+        ,"limitResize" : false
         ,"position" : "absolute"
     }]);
 });
@@ -157,8 +157,8 @@ $.fn.zDrag = function(option) {
             _zDrag.selfStyle    = _selfStyle;
             
             _zDrag.subtrahend = {
-                "y" : ( _selfPos === "absolute" ? e.pageY - _self.offsetTop : e.offsetY )
-                , "x" : ( _selfPos === "absolute" ? e.pageX - _self.offsetLeft : e.offsetX )
+                "y" : ( _selfPos === "absolute" ? (e.pageY + _parent.scrollTop) - _self.offsetTop : e.offsetY )
+                , "x" : ( _selfPos === "absolute" ? (e.pageX + _parent.scrollLeft) - _self.offsetLeft : e.offsetX )
             };
             
             if (_settings.limitDrag === true) {
@@ -170,6 +170,8 @@ $.fn.zDrag = function(option) {
                 
                 _zDrag.height = _self.offsetHeight;
                 _zDrag.width = _self.offsetWidth;
+            } else {
+                _zDrag.parent = _parent;
             }
             
             _zDrag.drag = true;
@@ -230,8 +232,9 @@ window.onmousemove = function(e) {
             _selfStyle.top = ( _currentY > 0 || _newY > 0 ? _newY + "px" : "0px" );
             _selfStyle.left = ( _currentX > 0 || _newX > 0 ? _newX + "px" : "0px" );
         } else {
-            _selfStyle.top   = _minuendY - _subtrahend.y + "px";
-            _selfStyle.left  = _minuendX - _subtrahend.x + "px";
+            var _parent = _objDrag.parent;
+            _selfStyle.top   = (_minuendY + _parent.scrollTop) - _subtrahend.y + "px";
+            _selfStyle.left  = (_minuendX + _parent.scrollLeft) - _subtrahend.x + "px";
         }
         
         if (typeof _self.onDrag === "function") {
@@ -489,4 +492,4 @@ $.fn.zWindow = function(option) {
         
         return _$zWindow;
     }
-};     
+};
